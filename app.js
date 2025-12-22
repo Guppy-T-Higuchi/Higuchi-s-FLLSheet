@@ -118,8 +118,10 @@ function initializeApp() {
         document.addEventListener('input', handleInputChange);
         document.addEventListener('change', handleInputChange);
         
-        // 依存関係を初期化
-        initializeDependencies();
+        // 依存関係を初期化（少し遅延させて確実にDOMに追加された後に実行）
+        setTimeout(() => {
+            initializeDependencies();
+        }, 100);
         
         // コンテンツを自動的にスケーリング（複数回実行で確実に）
         autoScaleContent();
@@ -324,9 +326,12 @@ function renderMissions() {
             
             // 依存関係がある場合は、データ属性を設定
             if (criterion.dependsOn !== undefined) {
+                console.log(`依存関係を設定: ミッション${index + 1}の基準${critIndex}は基準${criterion.dependsOn}に依存`);
                 criterionDiv.dataset.dependsOn = criterion.dependsOn;
                 criterionDiv.dataset.missionIndex = index;
                 criterionDiv.dataset.criterionIndex = critIndex;
+                // 初期状態で無効化スタイルを追加
+                criterionDiv.classList.add('criterion-disabled');
             }
             
             const label = document.createElement('div');
@@ -501,20 +506,33 @@ function handleInputChange(event) {
 
 // 依存関係を初期化
 function initializeDependencies() {
+    console.log('依存関係を初期化中...');
     // すべての依存関係がある基準を確認
     const dependentCriteria = document.querySelectorAll('[data-depends-on]');
+    console.log(`依存関係がある基準: ${dependentCriteria.length}個`);
+    
     dependentCriteria.forEach(criterionDiv => {
         const dependsOnIndex = parseInt(criterionDiv.dataset.dependsOn);
         const missionIndex = parseInt(criterionDiv.dataset.missionIndex);
         const criterionIndex = parseInt(criterionDiv.dataset.criterionIndex);
         
+        console.log(`ミッション${missionIndex + 1}の基準${criterionIndex}は基準${dependsOnIndex}に依存`);
+        
         // 依存元の基準を取得
         const dependsOnRadioName = `mission-${missionIndex + 1}-criteria-${dependsOnIndex}`;
         const dependsOnRadios = document.querySelectorAll(`input[name="${dependsOnRadioName}"]`);
         
+        console.log(`依存元のラジオボタン（${dependsOnRadioName}）: ${dependsOnRadios.length}個`);
+        
+        if (dependsOnRadios.length === 0) {
+            console.error(`依存元のラジオボタンが見つかりません: ${dependsOnRadioName}`);
+            return;
+        }
+        
         // 依存元のラジオボタンが変更されたときに、依存先を有効/無効化
         dependsOnRadios.forEach(radio => {
             radio.addEventListener('change', () => {
+                console.log(`依存元が変更されました: ${dependsOnRadioName}`);
                 updateDependentCriterion(criterionDiv, dependsOnRadioName);
             });
         });
@@ -522,6 +540,8 @@ function initializeDependencies() {
         // 初期状態を設定
         updateDependentCriterion(criterionDiv, dependsOnRadioName);
     });
+    
+    console.log('依存関係の初期化完了');
 }
 
 // 依存先の基準を更新（有効/無効化）
@@ -529,16 +549,22 @@ function updateDependentCriterion(criterionDiv, dependsOnRadioName) {
     const dependsOnRadio = document.querySelector(`input[name="${dependsOnRadioName}"]:checked`);
     const isParentYes = dependsOnRadio && dependsOnRadio.value !== '0';
     
+    console.log(`依存関係チェック: ${dependsOnRadioName}, 親が「はい」: ${isParentYes}`);
+    
     // 依存先の入力要素を取得
     const inputs = criterionDiv.querySelectorAll('input');
+    
+    console.log(`依存先の入力要素数: ${inputs.length}`);
     
     inputs.forEach(input => {
         if (isParentYes) {
             // 親が「はい」の場合、有効化
+            console.log(`有効化: ${input.name || input.id}`);
             input.disabled = false;
             criterionDiv.classList.remove('criterion-disabled');
         } else {
             // 親が「いいえ」または未選択の場合、無効化
+            console.log(`無効化: ${input.name || input.id}`);
             input.disabled = true;
             criterionDiv.classList.add('criterion-disabled');
             
