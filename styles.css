@@ -7,20 +7,25 @@
 body {
     font-family: 'MS Gothic', 'MS PGothic', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif;
     background-color: #f5f5f5;
-    padding: 20px;
+    padding: 10px;
     color: #333;
     margin: 0;
+    overflow-x: auto;
 }
 
 .container {
     width: 1123px; /* A4横向きの幅 (297mm at 96dpi) */
-    min-height: 794px; /* A4横向きの高さ (210mm at 96dpi) */
+    height: 794px; /* A4横向きの高さ (210mm at 96dpi) */
+    min-width: 1123px;
+    min-height: 794px;
     max-width: 1123px;
+    max-height: 794px;
     margin: 0 auto;
     background-color: white;
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .header {
@@ -346,9 +351,16 @@ body {
 }
 
 @media screen and (max-width: 1200px) {
+    body {
+        padding: 5px;
+    }
+    
     .container {
-        width: 100%;
+        width: 1123px;
+        min-width: 1123px;
         max-width: 1123px;
+        transform: scale(0.9);
+        transform-origin: top center;
     }
     
     .header-content {
