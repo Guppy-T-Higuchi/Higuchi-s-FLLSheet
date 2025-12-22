@@ -376,7 +376,18 @@ function renderMissions() {
         
         section.appendChild(title);
         section.appendChild(content);
-        container.appendChild(section);
+        
+        // 右カラムの場合、固定セクションの前に挿入
+        if (container === rightContainer) {
+            const firstFixedSection = rightContainer.querySelector('.fixed-section, .score-result');
+            if (firstFixedSection) {
+                rightContainer.insertBefore(section, firstFixedSection);
+            } else {
+                rightContainer.appendChild(section);
+            }
+        } else {
+            container.appendChild(section);
+        }
         console.log(`ミッション${index + 1}を${container.id}に追加しました`);
     });
     

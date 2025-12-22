@@ -165,10 +165,10 @@ body {
     align-self: start; /* 各カラムを明示的に上端から配置 */
 }
 
-/* 右カラムは採点結果を下部に配置 */
+/* 右カラムは上から詰めて配置 */
 #missions-right {
     justify-content: flex-start;
-    position: relative;
+    align-items: stretch;
 }
 
 /* 固定セクションを下部に配置 */
