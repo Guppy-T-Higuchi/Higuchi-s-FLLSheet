@@ -115,8 +115,11 @@ function initializeApp() {
         console.log('Gracious Professionalismをレンダリング完了');
         
         // すべての入力にイベントリスナーを追加
-        document.addEventListener('input', calculateTotalScore);
-        document.addEventListener('change', calculateTotalScore);
+        document.addEventListener('input', handleInputChange);
+        document.addEventListener('change', handleInputChange);
+        
+        // 依存関係を初期化
+        initializeDependencies();
         
         // コンテンツを自動的にスケーリング（複数回実行で確実に）
         autoScaleContent();
@@ -319,6 +322,13 @@ function renderMissions() {
             const criterionDiv = document.createElement('div');
             criterionDiv.className = 'criterion';
             
+            // 依存関係がある場合は、データ属性を設定
+            if (criterion.dependsOn !== undefined) {
+                criterionDiv.dataset.dependsOn = criterion.dependsOn;
+                criterionDiv.dataset.missionIndex = index;
+                criterionDiv.dataset.criterionIndex = critIndex;
+            }
+            
             const label = document.createElement('div');
             label.className = 'criterion-label';
             label.textContent = criterion.description;
@@ -338,6 +348,11 @@ function renderMissions() {
                     radio.name = `mission-${index + 1}-criteria-${critIndex}`;
                     radio.value = optIndex === 0 ? '0' : criterion.points;
                     radio.dataset.points = optIndex === 0 ? '0' : criterion.points;
+                    
+                    // 依存関係がある場合、初期状態で無効化
+                    if (criterion.dependsOn !== undefined) {
+                        radio.disabled = true;
+                    }
                     
                     labelEl.appendChild(radio);
                     labelEl.appendChild(document.createTextNode(option));
@@ -363,6 +378,11 @@ function renderMissions() {
                 numberInput.value = criterion.min || 0;
                 numberInput.dataset.pointsPerUnit = criterion.pointsPerUnit || 1;
                 numberInput.dataset.maxPoints = criterion.maxPoints || (criterion.max * (criterion.pointsPerUnit || 1));
+                
+                // 依存関係がある場合、初期状態で無効化
+                if (criterion.dependsOn !== undefined) {
+                    numberInput.disabled = true;
+                }
                 
                 numberGroup.appendChild(labelEl);
                 numberGroup.appendChild(numberInput);
@@ -469,6 +489,88 @@ function renderGraciousProfessionalism() {
     criterionDiv.appendChild(label);
     criterionDiv.appendChild(inputGroup);
     container.appendChild(criterionDiv);
+}
+
+// 入力変更時のハンドラー（依存関係チェックとスコア計算）
+function handleInputChange(event) {
+    // 依存関係をチェック
+    checkDependencies(event.target);
+    // スコアを再計算
+    calculateTotalScore();
+}
+
+// 依存関係を初期化
+function initializeDependencies() {
+    // すべての依存関係がある基準を確認
+    const dependentCriteria = document.querySelectorAll('[data-depends-on]');
+    dependentCriteria.forEach(criterionDiv => {
+        const dependsOnIndex = parseInt(criterionDiv.dataset.dependsOn);
+        const missionIndex = parseInt(criterionDiv.dataset.missionIndex);
+        const criterionIndex = parseInt(criterionDiv.dataset.criterionIndex);
+        
+        // 依存元の基準を取得
+        const dependsOnRadioName = `mission-${missionIndex + 1}-criteria-${dependsOnIndex}`;
+        const dependsOnRadios = document.querySelectorAll(`input[name="${dependsOnRadioName}"]`);
+        
+        // 依存元のラジオボタンが変更されたときに、依存先を有効/無効化
+        dependsOnRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                updateDependentCriterion(criterionDiv, dependsOnRadioName);
+            });
+        });
+        
+        // 初期状態を設定
+        updateDependentCriterion(criterionDiv, dependsOnRadioName);
+    });
+}
+
+// 依存先の基準を更新（有効/無効化）
+function updateDependentCriterion(criterionDiv, dependsOnRadioName) {
+    const dependsOnRadio = document.querySelector(`input[name="${dependsOnRadioName}"]:checked`);
+    const isParentYes = dependsOnRadio && dependsOnRadio.value !== '0';
+    
+    // 依存先の入力要素を取得
+    const inputs = criterionDiv.querySelectorAll('input');
+    
+    inputs.forEach(input => {
+        if (isParentYes) {
+            // 親が「はい」の場合、有効化
+            input.disabled = false;
+            criterionDiv.classList.remove('criterion-disabled');
+        } else {
+            // 親が「いいえ」または未選択の場合、無効化
+            input.disabled = true;
+            criterionDiv.classList.add('criterion-disabled');
+            
+            // ラジオボタンの選択を解除
+            if (input.type === 'radio' && input.checked) {
+                input.checked = false;
+            }
+            // 数値入力をリセット
+            if (input.type === 'number') {
+                input.value = input.min || 0;
+            }
+        }
+    });
+}
+
+// 依存関係をチェック（特定の入力要素が変更されたとき）
+function checkDependencies(element) {
+    if (!element || !element.name) return;
+    
+    // この入力要素に依存している基準を探す
+    const missionMatch = element.name.match(/mission-(\d+)-criteria-(\d+)/);
+    if (!missionMatch) return;
+    
+    const missionIndex = parseInt(missionMatch[1]) - 1;
+    const criterionIndex = parseInt(missionMatch[2]);
+    
+    // この基準に依存している基準を探す
+    const dependentCriteria = document.querySelectorAll(`[data-mission-index="${missionIndex}"][data-depends-on="${criterionIndex}"]`);
+    
+    dependentCriteria.forEach(criterionDiv => {
+        updateDependentCriterion(criterionDiv, element.name);
+    });
 }
 
 // 合計スコアを計算

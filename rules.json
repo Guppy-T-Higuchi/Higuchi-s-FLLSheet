@@ -37,7 +37,8 @@
         {
           "description": "サメがマットに触れ、生息地に部分的に入っている",
           "type": "boolean",
-          "points": 20
+          "points": 20,
+          "dependsOn": 0
         }
       ]
     },
@@ -71,7 +72,8 @@
         {
           "description": "スキューバダイバーがサンゴ礁のサポートの上にある",
           "type": "boolean",
-          "points": 20
+          "points": 20,
+          "dependsOn": 0
         }
       ]
     },
