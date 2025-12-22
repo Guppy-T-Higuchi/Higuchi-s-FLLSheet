@@ -242,7 +242,15 @@
     "description": "競技終了時に残っている精密トークンの数:",
     "min": 0,
     "max": 6,
-    "pointsPerUnit": 5
+    "pointsTable": {
+      "6": 50,
+      "5": 50,
+      "4": 35,
+      "3": 25,
+      "2": 15,
+      "1": 10,
+      "0": 0
+    }
   },
   "graciousProfessionalism": {
     "description": "ロボットゲームで示されたGracious Professionalism®",

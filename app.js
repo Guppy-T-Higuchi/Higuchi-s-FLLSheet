@@ -472,19 +472,25 @@ function calculateTotalScore() {
         });
     });
     
-    // 精密トークン
+    // 精密トークン（変則的な採点方法）
     const precisionInput = document.getElementById('precision-tokens-input');
-    if (precisionInput) {
+    if (precisionInput && rulesData && rulesData.precisionTokens) {
         const value = parseInt(precisionInput.value) || 0;
-        const pointsPerUnit = parseInt(precisionInput.dataset.pointsPerUnit) || 1;
-        total += value * pointsPerUnit;
+        // JSONからポイントテーブルを取得、なければデフォルト値を使用
+        const pointsTable = rulesData.precisionTokens.pointsTable || {
+            6: 50,
+            5: 50,
+            4: 35,
+            3: 25,
+            2: 15,
+            1: 10,
+            0: 0
+        };
+        // 文字列キーと数値キーの両方に対応
+        total += pointsTable[value] || pointsTable[String(value)] || 0;
     }
     
-    // Gracious Professionalism
-    const gpRadio = document.querySelector('input[name="gracious-professionalism"]:checked');
-    if (gpRadio) {
-        total += parseInt(gpRadio.dataset.points) || 0;
-    }
+    // Gracious Professionalismは採点に加算しない（表示のみ）
     
     // 合計スコアを表示
     document.getElementById('total-score').textContent = total;
