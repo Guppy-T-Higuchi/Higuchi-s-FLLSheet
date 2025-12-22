@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>樋口式FLLスコアシート</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <div class="title-section">
+                    <img src="title.png" alt="first lego league challenge 樋口式スコアシート" class="title-image">
+                    <div class="json-load-section">
+                        <input type="file" id="json-file-input" accept=".json" style="display: none;">
+                        <button type="button" id="json-load-btn" class="json-load-btn">JSON読み込み</button>
+                    </div>
+                </div>
+                <div class="team-info">
+                    <table class="info-table">
+                        <tr>
+                            <td>チームNo.</td>
+                            <td><input type="text" id="teamNo" class="info-input"></td>
+                            <td>ラウンド</td>
+                            <td><input type="text" id="round" class="info-input"></td>
+                        </tr>
+                        <tr>
+                            <td>レフリー</td>
+                            <td><input type="text" id="referee" class="info-input"></td>
+                            <td>テーブル</td>
+                            <td><input type="text" id="table" class="info-input"></td>
+                        </tr>
+                    </table>
+                    <div class="team-signature">
+                        <label>チームのサイン(チーム名):</label>
+                        <input type="text" id="teamName" class="signature-input">
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- ミッションエリア（2カラムグリッド） -->
+            <div class="missions-wrapper">
+                <!-- 左カラム：装備の点検 + ミッション -->
+                <div id="missions-left" class="missions-column">
+                    <!-- 装備の点検（左上固定位置） -->
+                    <section class="mission-section fixed-section" id="equipment-inspection">
+                        <h2 class="mission-title">装備の点検</h2>
+                        <div class="mission-content" id="equipment-content"></div>
+                    </section>
+                    <!-- ミッションは動的に生成される -->
+                </div>
+                
+                <!-- 右カラム：ミッション + 固定セクション + 採点結果 -->
+                <div id="missions-right" class="missions-column">
+                    <!-- ミッションは動的に生成される -->
+                    
+                    <!-- 精密トークン（固定位置） -->
+                    <section class="mission-section fixed-section" id="precision-tokens">
+                        <h2 class="mission-title">精密トークン</h2>
+                        <div class="mission-content" id="precision-content"></div>
+                    </section>
+
+                    <!-- Gracious Professionalism（固定位置） -->
+                    <section class="mission-section fixed-section" id="gracious-professionalism">
+                        <h2 class="mission-title">ロボットゲームで示されたGracious Professionalism®</h2>
+                        <div class="mission-content" id="gp-content"></div>
+                    </section>
+
+                    <!-- 採点結果（右下固定位置） -->
+                    <section class="score-result">
+                        <h2 class="mission-title">採点結果</h2>
+                        <div class="mission-content">
+                            <div class="score-display">
+                                <span class="score-label">点</span>
+                                <span class="score-value" id="total-score">0</span>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+

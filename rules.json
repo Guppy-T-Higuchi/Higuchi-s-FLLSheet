@@ -1,0 +1,265 @@
+{
+  "equipmentInspection": {
+    "description": "競技前の点検時に、ロボットと全ての装備がどちらか一方の発進エリア完全に収まり、その高さが305mm以内であった",
+    "points": 10
+  },
+  "missions": [
+    {
+      "name": "サンゴの苗床",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "サンゴの木がサポートの上にある",
+          "type": "boolean",
+          "points": 10
+        },
+        {
+          "description": "サンゴの木の底がホルダーの中にある",
+          "type": "boolean",
+          "points": 15
+        },
+        {
+          "description": "サンゴの芽が上を向いている",
+          "type": "boolean",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "name": "サメ",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "サメが洞窟に触れていない",
+          "type": "boolean",
+          "points": 15
+        },
+        {
+          "description": "サメがマットに触れ、生息地に部分的に入っている",
+          "type": "boolean",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "name": "サンゴ礁",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "サンゴ礁が上を向いており、マットに触れていない",
+          "type": "boolean",
+          "points": 20
+        },
+        {
+          "description": "サンゴ礁の断片が直立しており、ホームの外側でマットに接触している:",
+          "type": "number",
+          "min": 0,
+          "max": 3,
+          "pointsPerUnit": 10
+        }
+      ]
+    },
+    {
+      "name": "スキューバダイバー",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "スキューバダイバーがサンゴの苗床に触れていない",
+          "type": "boolean",
+          "points": 15
+        },
+        {
+          "description": "スキューバダイバーがサンゴ礁のサポートの上にある",
+          "type": "boolean",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "name": "アンコウ",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "アンコウが沈没船の中にラッチされている",
+          "type": "boolean",
+          "points": 25
+        }
+      ]
+    },
+    {
+      "name": "マスト上げ",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "沈没船のマストが完全に上がっている",
+          "type": "boolean",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "name": "クラーケンの宝",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "宝箱がクラーケンの巣の外に完全に出ている",
+          "type": "boolean",
+          "points": 25
+        }
+      ]
+    },
+    {
+      "name": "人工生息地",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "人工生息地のスタックセグメントが完全に水平であり直立している:",
+          "type": "number",
+          "min": 0,
+          "max": 4,
+          "pointsPerUnit": 10
+        }
+      ]
+    },
+    {
+      "name": "予期せぬ遭遇",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "未知の生物が解放されている",
+          "type": "boolean",
+          "points": 15
+        },
+        {
+          "description": "未知の生物が冷湧出域に部分的に入っている",
+          "type": "boolean",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "name": "潜水艇の派遣",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "自チームの黄色い旗が下がっている",
+          "type": "boolean",
+          "points": 15
+        },
+        {
+          "description": "潜水艇が相手フィールドに明確に接近している",
+          "type": "boolean",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "name": "超音波探索",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "クジラの見えている数:",
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "pointsPerUnit": 15
+        }
+      ]
+    },
+    {
+      "name": "クジラの餌やり",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "オキアミがクジラの口に少しでもインしている数:",
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "pointsPerUnit": 10
+        }
+      ]
+    },
+    {
+      "name": "船の航路の変更",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "船が新しい航路上にあり、マットに触れている",
+          "type": "boolean",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "name": "サンプル採取",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "水サンプルがエリアの外に完全に出ている",
+          "type": "boolean",
+          "points": 15
+        },
+        {
+          "description": "海底サンプルが海底に触れていない",
+          "type": "boolean",
+          "points": 15
+        },
+        {
+          "description": "プランクトンサンプルがケルプの森に触れていない",
+          "type": "boolean",
+          "points": 15
+        },
+        {
+          "description": "トライデントが沈没船に接触していない数:",
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "pointsPerUnit": 10
+        }
+      ]
+    },
+    {
+      "name": "調査船",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "以下のものが調査船の貨物エリアに少しでもインしている数:",
+          "type": "number",
+          "min": 0,
+          "max": 6,
+          "pointsPerUnit": 10,
+          "note": "サンプル×3, トライデント×2, 宝箱×1"
+        },
+        {
+          "description": "ポートラッチが調査船のループに部分的に入っている",
+          "type": "boolean",
+          "points": 25
+        }
+      ]
+    }
+  ],
+  "precisionTokens": {
+    "description": "競技終了時に残っている精密トークンの数:",
+    "min": 0,
+    "max": 6,
+    "pointsPerUnit": 5
+  },
+  "graciousProfessionalism": {
+    "description": "ロボットゲームで示されたGracious Professionalism®",
+    "options": [
+      {
+        "label": "改善の余地がある",
+        "points": 2
+      },
+      {
+        "label": "達成している",
+        "points": 3
+      },
+      {
+        "label": "非常に優れている",
+        "points": 4
+      }
+    ]
+  }
+}
+
