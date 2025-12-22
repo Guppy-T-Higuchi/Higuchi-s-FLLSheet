@@ -141,9 +141,8 @@ body {
 
 /* 装備の点検（左上固定位置） */
 #equipment-inspection {
-    margin-bottom: 3px;
+    margin-bottom: 2px;
     flex-shrink: 0;
-    width: calc(50% - 1.5px); /* グリッドの左カラムと同じ幅 */
 }
 
 /* ミッションエリアのラッパー */
@@ -163,6 +162,7 @@ body {
     gap: 2px;
     min-height: 0;
     overflow: visible;
+    align-self: start; /* 各カラムを明示的に上端から配置 */
 }
 
 /* 右カラムは採点結果を下部に配置 */
