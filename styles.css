@@ -152,6 +152,7 @@ body {
     gap: 3px;
     flex: 1;
     min-height: 0;
+    align-items: start; /* 各カラムを上端から配置 */
 }
 
 /* 左右のカラム */
