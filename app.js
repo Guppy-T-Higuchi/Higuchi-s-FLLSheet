@@ -109,6 +109,9 @@ function initializeApp() {
         document.addEventListener('input', calculateTotalScore);
         document.addEventListener('change', calculateTotalScore);
         
+        // コンテンツを自動的にスケーリング
+        autoScaleContent();
+        
         console.log('アプリケーションの初期化が完了しました');
     } catch (error) {
         console.error('初期化中にエラーが発生しました:', error);
@@ -170,6 +173,9 @@ function moveFixedSectionsToBottom() {
         if (gpSection) rightContainer.appendChild(gpSection);
         if (scoreSection) rightContainer.appendChild(scoreSection);
     }
+    
+    // レイアウト変更後に自動スケーリングを適用
+    autoScaleContent();
 }
 
 // 固定セクションを右カラムに挿入
@@ -494,5 +500,53 @@ function calculateTotalScore() {
     
     // 合計スコアを表示
     document.getElementById('total-score').textContent = total;
+}
+
+// コンテンツを自動的にスケーリングしてA4サイズに収める
+function autoScaleContent() {
+    const mainContent = document.querySelector('.main-content');
+    const missionsWrapper = document.querySelector('.missions-wrapper');
+    if (!mainContent || !missionsWrapper) return;
+    
+    // スケールをリセット
+    mainContent.style.transform = 'none';
+    missionsWrapper.style.transform = 'none';
+    
+    // 実際のコンテンツサイズを取得
+    const containerHeight = 794; // A4横向きの高さ (210mm at 96dpi)
+    const header = document.querySelector('.header');
+    const headerHeight = header ? header.offsetHeight : 0;
+    const availableHeight = containerHeight - headerHeight - 8; // パディング考慮
+    
+    // 少し遅延させて正確なサイズを取得
+    setTimeout(() => {
+        // 左右のカラムの実際の高さを取得
+        const leftColumn = document.getElementById('missions-left');
+        const rightColumn = document.getElementById('missions-right');
+        
+        const leftHeight = leftColumn ? leftColumn.scrollHeight : 0;
+        const rightHeight = rightColumn ? rightColumn.scrollHeight : 0;
+        const maxColumnHeight = Math.max(leftHeight, rightHeight);
+        
+        // スケール計算（余白を考慮して0.98倍）
+        let scale = 1;
+        
+        if (maxColumnHeight > availableHeight) {
+            scale = (availableHeight / maxColumnHeight) * 0.98;
+        }
+        
+        if (scale < 1) {
+            missionsWrapper.style.transformOrigin = 'top left';
+            missionsWrapper.style.transform = `scale(${scale})`;
+            // ラッパーの高さも調整
+            missionsWrapper.style.height = `${availableHeight}px`;
+            console.log(`自動スケーリング適用: ${(scale * 100).toFixed(1)}%`);
+            console.log(`左カラム高さ: ${leftHeight}px, 右カラム高さ: ${rightHeight}px, 利用可能高さ: ${availableHeight}px`);
+        } else {
+            missionsWrapper.style.height = '';
+            console.log('自動スケーリング不要: コンテンツはA4サイズ内に収まっています');
+            console.log(`左カラム高さ: ${leftHeight}px, 右カラム高さ: ${rightHeight}px, 利用可能高さ: ${availableHeight}px`);
+        }
+    }, 150);
 }
 
