@@ -148,8 +148,8 @@ body {
 .missions-wrapper {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 8px;
+    gap: 6px;
+    margin-bottom: 6px;
     align-items: stretch;
     flex: 1;
     min-height: 0;
@@ -160,10 +160,9 @@ body {
 .missions-column {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
     min-height: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 /* 右カラムは採点結果を下部に配置 */
@@ -233,8 +232,8 @@ body {
 }
 
 .criterion {
-    margin-bottom: 8px;
-    padding: 5px;
+    margin-bottom: 6px;
+    padding: 4px;
     background-color: #f9f9f9;
     border-left: 2px solid #4caf50;
 }
