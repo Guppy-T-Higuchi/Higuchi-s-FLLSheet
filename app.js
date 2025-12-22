@@ -35,6 +35,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         moveFixedSectionsToBottom();
     }, 0);
     
+    // ウィンドウリサイズ時にスケーリングを再計算
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            autoScaleContent();
+        }, 250);
+    });
+    
     // 初期読み込み（rules.json）
     loadRulesFile('rules.json');
 });
@@ -109,8 +118,10 @@ function initializeApp() {
         document.addEventListener('input', calculateTotalScore);
         document.addEventListener('change', calculateTotalScore);
         
-        // コンテンツを自動的にスケーリング
+        // コンテンツを自動的にスケーリング（複数回実行で確実に）
         autoScaleContent();
+        setTimeout(() => autoScaleContent(), 300);
+        setTimeout(() => autoScaleContent(), 600);
         
         console.log('アプリケーションの初期化が完了しました');
     } catch (error) {
@@ -174,8 +185,8 @@ function moveFixedSectionsToBottom() {
         if (scoreSection) rightContainer.appendChild(scoreSection);
     }
     
-    // レイアウト変更後に自動スケーリングを適用
-    autoScaleContent();
+    // レイアウト変更後に自動スケーリングを適用（少し遅延）
+    setTimeout(() => autoScaleContent(), 100);
 }
 
 // 固定セクションを右カラムに挿入
@@ -504,49 +515,60 @@ function calculateTotalScore() {
 
 // コンテンツを自動的にスケーリングしてA4サイズに収める
 function autoScaleContent() {
+    const container = document.querySelector('.container');
     const mainContent = document.querySelector('.main-content');
-    const missionsWrapper = document.querySelector('.missions-wrapper');
-    if (!mainContent || !missionsWrapper) return;
-    
-    // スケールをリセット
-    mainContent.style.transform = 'none';
-    missionsWrapper.style.transform = 'none';
-    
-    // 実際のコンテンツサイズを取得
-    const containerHeight = 794; // A4横向きの高さ (210mm at 96dpi)
-    const header = document.querySelector('.header');
-    const headerHeight = header ? header.offsetHeight : 0;
-    const availableHeight = containerHeight - headerHeight - 8; // パディング考慮
+    if (!container || !mainContent) {
+        console.log('コンテナまたはメインコンテンツが見つかりません');
+        return;
+    }
     
     // 少し遅延させて正確なサイズを取得
     setTimeout(() => {
-        // 左右のカラムの実際の高さを取得
-        const leftColumn = document.getElementById('missions-left');
-        const rightColumn = document.getElementById('missions-right');
+        // スケールをリセットして実際のサイズを測定
+        container.style.transform = 'scale(1)';
         
-        const leftHeight = leftColumn ? leftColumn.scrollHeight : 0;
-        const rightHeight = rightColumn ? rightColumn.scrollHeight : 0;
-        const maxColumnHeight = Math.max(leftHeight, rightHeight);
-        
-        // スケール計算（余白を考慮して0.98倍）
-        let scale = 1;
-        
-        if (maxColumnHeight > availableHeight) {
-            scale = (availableHeight / maxColumnHeight) * 0.98;
-        }
-        
-        if (scale < 1) {
-            missionsWrapper.style.transformOrigin = 'top left';
-            missionsWrapper.style.transform = `scale(${scale})`;
-            // ラッパーの高さも調整
-            missionsWrapper.style.height = `${availableHeight}px`;
-            console.log(`自動スケーリング適用: ${(scale * 100).toFixed(1)}%`);
-            console.log(`左カラム高さ: ${leftHeight}px, 右カラム高さ: ${rightHeight}px, 利用可能高さ: ${availableHeight}px`);
-        } else {
-            missionsWrapper.style.height = '';
-            console.log('自動スケーリング不要: コンテンツはA4サイズ内に収まっています');
-            console.log(`左カラム高さ: ${leftHeight}px, 右カラム高さ: ${rightHeight}px, 利用可能高さ: ${availableHeight}px`);
-        }
-    }, 150);
+        // 測定のためにさらに少し待つ
+        setTimeout(() => {
+            // A4横向きのサイズ
+            const targetHeight = 794; // 210mm at 96dpi
+            const targetWidth = 1123; // 297mm at 96dpi
+            
+            // 実際のコンテンツサイズを取得（パディング含む）
+            const actualHeight = container.scrollHeight;
+            const actualWidth = container.scrollWidth;
+            
+            console.log(`実際のサイズ: ${actualWidth}px × ${actualHeight}px`);
+            console.log(`目標サイズ: ${targetWidth}px × ${targetHeight}px`);
+            
+            // スケール計算（余白を考慮）
+            let scaleY = 1;
+            let scaleX = 1;
+            
+            if (actualHeight > targetHeight) {
+                scaleY = (targetHeight / actualHeight) * 0.96;
+                console.log(`縦方向のスケール: ${(scaleY * 100).toFixed(1)}%`);
+            }
+            
+            if (actualWidth > targetWidth) {
+                scaleX = (targetWidth / actualWidth) * 0.96;
+                console.log(`横方向のスケール: ${(scaleX * 100).toFixed(1)}%`);
+            }
+            
+            // 小さい方のスケールを採用（縦横比を維持）
+            const scale = Math.min(scaleY, scaleX);
+            
+            if (scale < 1) {
+                container.style.transformOrigin = 'top left';
+                container.style.transform = `scale(${scale})`;
+                // bodyの高さを調整してスクロールバーを防ぐ
+                document.body.style.minHeight = `${actualHeight * scale + 40}px`;
+                console.log(`✓ 自動スケーリング適用: ${(scale * 100).toFixed(1)}%`);
+            } else {
+                container.style.transform = 'scale(1)';
+                document.body.style.minHeight = '';
+                console.log('✓ 自動スケーリング不要: コンテンツはA4サイズ内に収まっています');
+            }
+        }, 50);
+    }, 100);
 }
 
