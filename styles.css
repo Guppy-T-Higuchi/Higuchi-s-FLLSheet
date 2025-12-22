@@ -23,9 +23,10 @@ body {
     box-sizing: border-box;
     /* A4横向きの縦横比を維持 */
     aspect-ratio: 297 / 210;
-    /* コンテンツが増えた場合はスクロール可能 */
-    overflow-y: auto;
-    overflow-x: hidden;
+    /* スクロールなし - 印刷用 */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .header {
@@ -132,6 +133,10 @@ body {
 
 .main-content {
     margin-top: 10px;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 /* 装備の点検（左上固定位置） */
@@ -146,6 +151,9 @@ body {
     gap: 8px;
     margin-bottom: 8px;
     align-items: stretch;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
 }
 
 /* 左右のカラム */
@@ -153,6 +161,9 @@ body {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* 右カラムは採点結果を下部に配置 */
