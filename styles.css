@@ -310,10 +310,10 @@ body {
 }
 
 .score-result .mission-content {
-    padding: 6px 4px 10px 4px;
+    padding: 6px 4px 12px 4px;
     text-align: center;
     background-color: #f0f0f0;
-    min-height: 48px;
+    min-height: 50px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -348,7 +348,7 @@ body {
     position: absolute;
     bottom: 1px;
     right: 2px;
-    font-size: 7px;
+    font-size: 6px;
     color: #999;
     text-align: right;
     line-height: 1;
@@ -379,8 +379,8 @@ body {
     }
     
     body {
-        /* 印刷時に92%に縮小して、1ページに収まるようにする */
-        zoom: 0.92;
+        /* 印刷時に96%に縮小して、縁が欠けても内容が収まるようにする */
+        zoom: 0.96;
     }
     
     .container {
