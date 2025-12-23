@@ -4,7 +4,12 @@ FIRST LEGO LEAGUE CHALLENGE用の練習用スコア計算ツール
 
 ## 使い方
 
-### 方法1: ローカルサーバーを使用（推奨）
+### 方法1: 樋口先生管理のサーバーを使用(推奨)
+
+https;//fll.gupilab.net
+にアクセスする
+
+### 方法2: ローカルサーバーを使用
 
 1. **Pythonがインストールされている場合:**
    - `start-server.bat`（Windows）をダブルクリック
@@ -23,12 +28,6 @@ FIRST LEGO LEAGUE CHALLENGE用の練習用スコア計算ツール
      ```
      npx http-server
      ```
-
-### 方法2: JSON読み込みボタンを使用
-
-1. `index.html`をブラウザで直接開く（`file://`プロトコル）
-2. 「JSON読み込み」ボタンをクリック
-3. `rules.json`ファイルを選択
 
 ## ファイル構成
 
@@ -120,4 +119,5 @@ FIRST LEGO LEAGUE CHALLENGE用の練習用スコア計算ツール
 - `file://`プロトコルで直接開いた場合、JSONの自動読み込みは動作しません（CORS制限）
 - ローカルサーバー経由でアクセスするか、JSON読み込みボタンで手動読み込みしてください
 - A4横向きに自動的にスケーリングされます（項目数が多い場合）
+
 
