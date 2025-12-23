@@ -415,7 +415,7 @@ body {
     
     /* 縦方向に1%程度縮小（transformを使わない方法） */
     * {
-        line-height: 0.99 !important;
+        line-height: 0.98 !important;
     }
     
     .header {
