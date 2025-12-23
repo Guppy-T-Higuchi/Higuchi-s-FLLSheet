@@ -682,17 +682,17 @@ function autoScaleContent() {
             console.log(`実際のサイズ: ${actualWidth}px × ${actualHeight}px`);
             console.log(`目標サイズ: ${targetWidth}px × ${targetHeight}px`);
             
-            // スケール計算（余白を考慮）
+            // スケール計算（余白を考慮して0.98倍）
             let scaleY = 1;
             let scaleX = 1;
             
             if (actualHeight > targetHeight) {
-                scaleY = (targetHeight / actualHeight) * 0.96;
+                scaleY = (targetHeight / actualHeight) * 0.98;
                 console.log(`縦方向のスケール: ${(scaleY * 100).toFixed(1)}%`);
             }
             
             if (actualWidth > targetWidth) {
-                scaleX = (targetWidth / actualWidth) * 0.96;
+                scaleX = (targetWidth / actualWidth) * 0.98;
                 console.log(`横方向のスケール: ${(scaleX * 100).toFixed(1)}%`);
             }
             
@@ -702,14 +702,12 @@ function autoScaleContent() {
             if (scale < 1) {
                 container.style.transformOrigin = 'top left';
                 container.style.transform = `scale(${scale})`;
-                // bodyの高さを調整（スケール後のコンテナの高さ + 余白）
-                const scaledHeight = actualHeight * scale;
-                document.body.style.minHeight = `${scaledHeight + 60}px`;
+                // bodyの高さを調整してスクロールバーを防ぐ
+                document.body.style.minHeight = `${actualHeight * scale + 40}px`;
                 console.log(`✓ 自動スケーリング適用: ${(scale * 100).toFixed(1)}%`);
-                console.log(`元の高さ: ${actualHeight}px, 縮小後: ${scaledHeight.toFixed(0)}px`);
             } else {
                 container.style.transform = 'scale(1)';
-                document.body.style.minHeight = `${actualHeight + 40}px`;
+                document.body.style.minHeight = '';
                 console.log('✓ 自動スケーリング不要: コンテンツはA4サイズ内に収まっています');
             }
         }, 50);
