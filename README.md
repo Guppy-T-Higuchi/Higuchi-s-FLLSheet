@@ -37,6 +37,7 @@ FIRST LEGO LEAGUE CHALLENGE用の練習用スコア計算ツール
 - `styles.css` - スタイルシート
 - `rules.json` - ルール定義ファイル
 - `title.png` - タイトル画像
+- `penalty-icon.png` - 装備接触禁止マーク画像
 
 ## JSON設定（rules.json）
 
@@ -51,6 +52,21 @@ FIRST LEGO LEAGUE CHALLENGE用の練習用スコア計算ツール
       "criteria": [...]
     }
   ]
+}
+```
+
+### 装備接触禁止マーク
+
+`hasPenalty`プロパティで装備接触禁止マークの表示を制御できます。
+
+- `"hasPenalty": true` - マークを表示
+- `"hasPenalty": false` - マークを非表示
+
+```json
+{
+  "name": "サンゴの苗床",
+  "hasPenalty": true,
+  "criteria": [...]
 }
 ```
 
