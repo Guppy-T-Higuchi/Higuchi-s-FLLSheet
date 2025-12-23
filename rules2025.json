@@ -1,0 +1,254 @@
+{
+  "equipmentInspection": {
+    "description": "競技前の点検時に、ロボットと全ての装備がどちらか一方の発進エリア完全に収まり、その高さが305mm以内であった",
+    "points": 10
+  },
+  "missions": [
+    {
+      "name": "表面清掃",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "土層が完全に取り除かれ、マットに接触している",
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "pointsPerUnit": 10
+        },
+        {
+          "description": "考古学者の発掘ブラシが発掘現場に接触していない",
+          "type": "boolean",
+          "points": 10
+        }
+      ]
+    },
+    {
+      "name": "地図の露出",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "表土のセクションが完全に取り除かれている",
+          "type": "number",
+          "min": 0,
+          "max": 3,
+          "pointsPerUnit": 10
+        }
+      ]
+    },
+    {
+      "name": "鉱坑の探査",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "自チームのトロッコが相手チームのフィールド上にある",
+          "type": "boolean",
+          "points": 30
+        },
+        {
+          "description": "相手チームのトロッコが自チームのフィールド上にある:",
+          "type": "boolean",
+          "points": 10,
+          "dependsOn": 0
+        }
+      ]
+    },
+    {
+      "name": "慎重な回収",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "貴重な遺物が鉱山に接触していない",
+          "type": "boolean",
+          "points": 30
+        },
+        {
+          "description": "両方の支柱が立っている",
+          "type": "boolean",
+          "points": 10
+        }
+      ]
+    },
+    {
+      "name": "誰が住んでいた？",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "床がまっすぐ上を向いている",
+          "type": "boolean",
+          "points": 30
+        }
+      ]
+    },
+    {
+      "name": "鍛冶場",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "鉱石が鍛冶場に接触していない",
+          "type": "number",
+          "min": 0,
+          "max": 3,
+          "pointsPerUnit": 10
+        }
+      ]
+    },
+    {
+      "name": "力仕事",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "石臼が台座に接触していない",
+          "type": "boolean",
+          "points": 30
+        }
+      ]
+    },
+    {
+      "name": "サイロ",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "保存食がサイロの外にある",
+          "type": "number",
+          "min": 0,
+          "max": 3,
+          "pointsPerUnit": 10
+        }
+      ]
+    },
+    {
+      "name": "何を売っていた？",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "屋根が完全に持ち上がっている",
+          "type": "boolean",
+          "points": 20
+        },
+        {
+          "description": "市場の交易品が持ち上がっている",
+          "type": "boolean",
+          "points": 10
+        }
+      ]
+    },
+    {
+      "name": "はかり",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "はかりが傾き、マットに接触している",
+          "type": "boolean",
+          "points": 20
+        },
+        {
+          "description": "はかりの皿が完全に取り除かれている",
+          "type": "boolean",
+          "points": 10
+        }
+      ]
+    },
+    {
+      "name": "港の遺物",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "遺物が地表の上に持ち上がっている",
+          "type": "boolean",
+          "points": 20
+        },
+        {
+          "description": "クレーンの旗が少しでも下がっている",
+          "type": "boolean",
+          "points": 10,
+          "dependsOn": 0
+        }
+      ]
+    },
+    {
+      "name": "船の救出",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "砂が完全に取り除かれている",
+          "type": "boolean",
+          "points": 20
+        },
+        {
+          "description": "船が完全に持ち上がっている",
+          "type": "boolean",
+          "points": 10
+        }
+      ]
+    },
+    {
+      "name": "像の復元",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "像が完全に持ち上がっている",
+          "type": "boolean",
+          "points": 30
+        }
+      ]
+    },
+    {
+      "name": "フォーラム",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "遺物がマットに接触しており、一部がフォーラムにインしている",
+          "type": "number",
+          "min": 0,
+          "max": 7,
+          "pointsPerUnit": 5
+        }
+      ]
+    },
+    {
+      "name": "発掘現場のマーキング",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "発掘現場が以下の条件を満たしている。旗が少しでも発掘現場に入っており、マットに接触している",
+          "type": "number",
+          "min": 0,
+          "max": 3,
+          "pointsPerUnit": 10
+        }
+      ]
+    }
+  ],
+  "precisionTokens": {
+    "description": "競技終了時に残っている精密トークンの数:",
+    "min": 0,
+    "max": 6,
+    "pointsTable": {
+      "6": 50,
+      "5": 50,
+      "4": 35,
+      "3": 25,
+      "2": 15,
+      "1": 10,
+      "0": 0
+    }
+  },
+  "graciousProfessionalism": {
+    "description": "ロボットゲームで示されたGracious Professionalism®",
+    "options": [
+      {
+        "label": "改善の余地がある",
+        "points": 2
+      },
+      {
+        "label": "達成している",
+        "points": 3
+      },
+      {
+        "label": "非常に優れている",
+        "points": 4
+      }
+    ]
+  }
+}
+

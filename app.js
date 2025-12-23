@@ -80,11 +80,16 @@ function clearContent() {
     document.getElementById('equipment-content').innerHTML = '';
     document.getElementById('precision-content').innerHTML = '';
     document.getElementById('gp-content').innerHTML = '';
-    document.getElementById('missions-left').innerHTML = '';
+    
+    // 左カラムのミッションのみをクリア（装備の点検は残す）
+    const missionsLeft = document.getElementById('missions-left');
+    const leftMissions = missionsLeft.querySelectorAll('.mission-section:not(#equipment-inspection)');
+    leftMissions.forEach(mission => mission.remove());
+    
     // 右カラムのミッションのみをクリア（固定セクションは残す）
     const missionsRight = document.getElementById('missions-right');
-    const missions = missionsRight.querySelectorAll('.mission-section:not(.fixed-section):not(.score-result)');
-    missions.forEach(mission => mission.remove());
+    const rightMissions = missionsRight.querySelectorAll('.mission-section:not(.fixed-section):not(.score-result)');
+    rightMissions.forEach(mission => mission.remove());
 }
 
 // アプリケーションの初期化
@@ -655,7 +660,7 @@ function calculateTotalScore() {
     document.getElementById('total-score').textContent = total;
 }
 
-// コンテンツを自動的にスケーリングしてA4サイズに収める
+// コンテンツを自動的にスケーリングしてA4サイズに収める（画面表示時は無効化）
 function autoScaleContent() {
     const container = document.querySelector('.container');
     const mainContent = document.querySelector('.main-content');
@@ -664,53 +669,9 @@ function autoScaleContent() {
         return;
     }
     
-    // 少し遅延させて正確なサイズを取得
-    setTimeout(() => {
-        // スケールをリセットして実際のサイズを測定
-        container.style.transform = 'scale(1)';
-        
-        // 測定のためにさらに少し待つ
-        setTimeout(() => {
-            // A4横向きのサイズ
-            const targetHeight = 794; // 210mm at 96dpi
-            const targetWidth = 1123; // 297mm at 96dpi
-            
-            // 実際のコンテンツサイズを取得（パディング含む）
-            const actualHeight = container.scrollHeight;
-            const actualWidth = container.scrollWidth;
-            
-            console.log(`実際のサイズ: ${actualWidth}px × ${actualHeight}px`);
-            console.log(`目標サイズ: ${targetWidth}px × ${targetHeight}px`);
-            
-            // スケール計算（余白を考慮）
-            let scaleY = 1;
-            let scaleX = 1;
-            
-            if (actualHeight > targetHeight) {
-                scaleY = (targetHeight / actualHeight) * 0.96;
-                console.log(`縦方向のスケール: ${(scaleY * 100).toFixed(1)}%`);
-            }
-            
-            if (actualWidth > targetWidth) {
-                scaleX = (targetWidth / actualWidth) * 0.96;
-                console.log(`横方向のスケール: ${(scaleX * 100).toFixed(1)}%`);
-            }
-            
-            // 小さい方のスケールを採用（縦横比を維持）
-            const scale = Math.min(scaleY, scaleX);
-            
-            if (scale < 1) {
-                container.style.transformOrigin = 'top left';
-                container.style.transform = `scale(${scale})`;
-                // bodyの高さを調整してスクロールバーを防ぐ
-                document.body.style.minHeight = `${actualHeight * scale + 40}px`;
-                console.log(`✓ 自動スケーリング適用: ${(scale * 100).toFixed(1)}%`);
-            } else {
-                container.style.transform = 'scale(1)';
-                document.body.style.minHeight = '';
-                console.log('✓ 自動スケーリング不要: コンテンツはA4サイズ内に収まっています');
-            }
-        }, 50);
-    }, 100);
+    // 画面表示時は自動スケーリングを無効化（印刷時のみzoomで対応）
+    console.log('✓ 画面表示: 自動スケーリングは無効（印刷時のみ適用）');
+    container.style.transform = 'scale(1)';
+    document.body.style.minHeight = '';
 }
 
