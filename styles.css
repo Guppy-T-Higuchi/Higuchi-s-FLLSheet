@@ -348,7 +348,7 @@ body {
     position: absolute;
     bottom: 1px;
     right: 2px;
-    font-size: 7px;
+    font-size: 6px;
     color: #999;
     text-align: right;
     line-height: 1;
@@ -411,32 +411,6 @@ body {
     
     .score-result {
         page-break-before: avoid;
-    }
-    
-    /* 縦方向に1%程度縮小（transformを使わない方法） */
-    * {
-        line-height: 0.98 !important;
-    }
-    
-    .header {
-        margin-bottom: 1px !important;
-    }
-    
-    .main-content {
-        margin-top: 1px !important;
-    }
-    
-    .missions-column {
-        gap: 1px !important;
-    }
-    
-    .mission-section {
-        margin-bottom: 1px !important;
-    }
-    
-    .criterion {
-        margin-bottom: 1px !important;
-        padding: 1px !important;
     }
 }
 
