@@ -374,12 +374,15 @@ body {
         background-color: white;
         padding: 0;
         margin: 0;
+        height: 100%;
+        overflow: hidden;
     }
     
     body {
         background-color: white;
         padding: 0;
         margin: 0;
+        height: 100%;
         /* 印刷時に96%に縮小して、縁が欠けても内容が収まるようにする */
         zoom: 0.96;
         overflow: hidden;
@@ -395,30 +398,43 @@ body {
         min-height: auto !important;
         margin: 0;
         overflow: hidden;
-        page-break-after: auto;
+        page-break-after: avoid !important;
         page-break-inside: avoid;
     }
     
     .header,
     .main-content {
         page-break-inside: avoid;
+        page-break-after: avoid;
     }
     
     .missions-wrapper {
         page-break-inside: avoid;
+        page-break-after: avoid;
     }
     
     .missions-column {
         page-break-inside: avoid;
+        page-break-after: avoid;
     }
     
     .mission-section {
         page-break-inside: avoid;
+        page-break-after: avoid;
     }
     
     .score-result {
         page-break-before: avoid;
         page-break-after: avoid;
+    }
+    
+    /* 2枚目のページを完全に防止 */
+    * {
+        page-break-after: avoid !important;
+    }
+    
+    .container::after {
+        content: none !important;
     }
 }
 
