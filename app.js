@@ -405,6 +405,20 @@ function renderMissions() {
                 numberInput.dataset.pointsPerUnit = criterion.pointsPerUnit || 1;
                 numberInput.dataset.maxPoints = criterion.maxPoints || (criterion.max * (criterion.pointsPerUnit || 1));
                 
+                // 数値入力の制限を強制（オーバーフロー防止）
+                numberInput.addEventListener('input', function(e) {
+                    const min = parseInt(this.min) || 0;
+                    const max = parseInt(this.max) || 10;
+                    let value = parseInt(this.value) || 0;
+                    
+                    // 最小値・最大値の範囲内に制限
+                    if (value < min) {
+                        this.value = min;
+                    } else if (value > max) {
+                        this.value = max;
+                    }
+                });
+                
                 // 依存関係がある場合、初期状態で無効化
                 if (criterion.dependsOn !== undefined) {
                     numberInput.disabled = true;
@@ -470,6 +484,20 @@ function renderPrecisionTokens() {
     numberInput.max = precision.max || 6;
     numberInput.value = precision.max || 6;
     numberInput.dataset.pointsPerUnit = precision.pointsPerUnit || 1;
+    
+    // 数値入力の制限を強制（オーバーフロー防止）
+    numberInput.addEventListener('input', function(e) {
+        const min = parseInt(this.min) || 0;
+        const max = parseInt(this.max) || 6;
+        let value = parseInt(this.value) || 0;
+        
+        // 最小値・最大値の範囲内に制限
+        if (value < min) {
+            this.value = min;
+        } else if (value > max) {
+            this.value = max;
+        }
+    });
     
     numberGroup.appendChild(labelEl);
     numberGroup.appendChild(numberInput);
@@ -641,8 +669,14 @@ function calculateTotalScore() {
             } else if (criterion.type === 'number') {
                 const numberInput = document.getElementById(`mission-${index + 1}-criteria-${critIndex}`);
                 if (numberInput) {
-                    const value = parseInt(numberInput.value) || 0;
+                    let value = parseInt(numberInput.value) || 0;
+                    const min = parseInt(numberInput.min) || 0;
+                    const max = parseInt(numberInput.max) || 10;
                     const pointsPerUnit = parseInt(numberInput.dataset.pointsPerUnit) || 1;
+                    
+                    // 念のため値を制限（オーバーフロー防止）
+                    value = Math.max(min, Math.min(max, value));
+                    
                     total += value * pointsPerUnit;
                 }
             }
@@ -652,7 +686,13 @@ function calculateTotalScore() {
     // 精密トークン（変則的な採点方法）
     const precisionInput = document.getElementById('precision-tokens-input');
     if (precisionInput && rulesData && rulesData.precisionTokens) {
-        const value = parseInt(precisionInput.value) || 0;
+        let value = parseInt(precisionInput.value) || 0;
+        const min = parseInt(precisionInput.min) || 0;
+        const max = parseInt(precisionInput.max) || 6;
+        
+        // 念のため値を制限（オーバーフロー防止）
+        value = Math.max(min, Math.min(max, value));
+        
         // JSONからポイントテーブルを取得、なければデフォルト値を使用
         const pointsTable = rulesData.precisionTokens.pointsTable || {
             6: 50,
