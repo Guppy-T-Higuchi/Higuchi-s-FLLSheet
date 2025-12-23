@@ -15,7 +15,7 @@ body {
 
 .container {
     width: 1123px; /* A4横向きの幅 (297mm at 96dpi) */
-    height: 794px; /* A4横向きの高さ (210mm at 96dpi) */
+    min-height: 794px; /* A4横向きの高さ (210mm at 96dpi) */
     margin: 0 auto;
     background-color: white;
     padding: 4px;
@@ -23,7 +23,6 @@ body {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
     /* 自動スケーリング用 */
     transform-origin: top left;
     transition: transform 0.3s ease;

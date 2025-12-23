@@ -682,17 +682,17 @@ function autoScaleContent() {
             console.log(`実際のサイズ: ${actualWidth}px × ${actualHeight}px`);
             console.log(`目標サイズ: ${targetWidth}px × ${targetHeight}px`);
             
-            // スケール計算（余白を考慮して0.98倍）
+            // スケール計算（余白を考慮）
             let scaleY = 1;
             let scaleX = 1;
             
             if (actualHeight > targetHeight) {
-                scaleY = (targetHeight / actualHeight) * 0.98;
+                scaleY = (targetHeight / actualHeight) * 0.96;
                 console.log(`縦方向のスケール: ${(scaleY * 100).toFixed(1)}%`);
             }
             
             if (actualWidth > targetWidth) {
-                scaleX = (targetWidth / actualWidth) * 0.98;
+                scaleX = (targetWidth / actualWidth) * 0.96;
                 console.log(`横方向のスケール: ${(scaleX * 100).toFixed(1)}%`);
             }
             
