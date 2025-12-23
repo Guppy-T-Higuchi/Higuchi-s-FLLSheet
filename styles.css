@@ -374,17 +374,22 @@ body {
         background-color: white;
         padding: 0;
         margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     
     .container {
         box-shadow: none;
         padding: 10px;
-        width: 100%;
+        width: 1123px;
         height: auto;
-        min-height: auto;
-        max-width: 100%;
-        margin: 0;
-        transform: none !important; /* 印刷時はスケールをリセット */
+        min-height: 794px;
+        max-width: none;
+        margin: 0 auto;
+        /* 印刷時に98%に縮小して、縁が欠けても内容が収まるようにする */
+        transform: scale(0.98) !important;
+        transform-origin: center center;
     }
     
     .missions-grid {
