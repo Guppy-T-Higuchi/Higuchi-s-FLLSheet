@@ -6,7 +6,7 @@ FIRST LEGO LEAGUE CHALLENGE用の練習用スコア計算ツール
 
 ### 方法1: 樋口先生管理のサーバーを使用(推奨)
 
-[https;//fll.gupilab.net](https;//fll.gupilab.net)
+[https://fll.gupilab.net](https://fll.gupilab.net)
 にアクセスする
 
 ### 方法2: ローカルサーバーを使用
@@ -119,6 +119,7 @@ FIRST LEGO LEAGUE CHALLENGE用の練習用スコア計算ツール
 - `file://`プロトコルで直接開いた場合、JSONの自動読み込みは動作しません（CORS制限）
 - ローカルサーバー経由でアクセスするか、JSON読み込みボタンで手動読み込みしてください
 - A4横向きに自動的にスケーリングされます（項目数が多い場合）
+
 
 
 
