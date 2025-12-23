@@ -388,8 +388,8 @@ body {
         margin: 0;
         page-break-after: avoid;
         page-break-before: avoid;
-        /* 印刷時に96%に縮小して、縁が欠けても内容が収まるようにする */
-        transform: scale(0.96) !important;
+        /* 印刷時に94%に縮小して、縁が欠けても内容が収まるようにする */
+        transform: scale(0.94) !important;
         transform-origin: top left;
     }
     
