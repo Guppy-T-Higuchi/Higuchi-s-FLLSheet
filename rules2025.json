@@ -1,7 +1,7 @@
 {
   "equipmentInspection": {
     "description": "競技前の点検時に、ロボットと全ての装備がどちらか一方の発進エリア完全に収まり、その高さが305mm以内であった",
-    "points": 10
+    "points": 20
   },
   "missions": [
     {
@@ -158,7 +158,7 @@
           "points": 20
         },
         {
-          "description": "クレーンの旗が少しでも下がっている",
+          "description": "クレーンの旗が少しでも上がっている",
           "type": "boolean",
           "points": 10,
           "dependsOn": 0
