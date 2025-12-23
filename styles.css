@@ -310,11 +310,12 @@ body {
 }
 
 .score-result .mission-content {
-    padding: 6px 4px;
+    padding: 6px 4px 12px 4px;
     text-align: center;
     background-color: #f0f0f0;
-    min-height: 40px;
+    min-height: 50px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative; /* フッターの基準点 */
@@ -345,11 +346,12 @@ body {
 
 .score-result .footer {
     position: absolute;
-    bottom: 2px;
-    right: 3px;
-    font-size: 7px;
-    color: #666;
+    bottom: 1px;
+    right: 2px;
+    font-size: 6px;
+    color: #999;
     text-align: right;
+    line-height: 1;
 }
 
 .score-result .footer a {
