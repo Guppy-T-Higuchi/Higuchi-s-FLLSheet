@@ -393,9 +393,6 @@ body {
         margin: 0;
         page-break-after: avoid;
         page-break-before: avoid;
-        /* 縦方向にさらに1%縮小 */
-        transform: scaleY(0.99);
-        transform-origin: top center;
     }
     
     .header,
@@ -414,6 +411,32 @@ body {
     
     .score-result {
         page-break-before: avoid;
+    }
+    
+    /* 縦方向に1%程度縮小（transformを使わない方法） */
+    * {
+        line-height: 0.99 !important;
+    }
+    
+    .header {
+        margin-bottom: 1px !important;
+    }
+    
+    .main-content {
+        margin-top: 1px !important;
+    }
+    
+    .missions-column {
+        gap: 1px !important;
+    }
+    
+    .mission-section {
+        margin-bottom: 1px !important;
+    }
+    
+    .criterion {
+        margin-bottom: 1px !important;
+        padding: 1px !important;
     }
 }
 
