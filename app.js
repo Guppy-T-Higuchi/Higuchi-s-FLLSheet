@@ -235,6 +235,9 @@ function insertFixedSections() {
                 <span class="score-value" id="total-score">0</span>
                 <span class="score-label">点</span>
             </div>
+            <div class="footer">
+                <a href="https://fll.gupilab.net" target="_blank" rel="noopener noreferrer">https://fll.gupilab.net</a>
+            </div>
         </div>
     `;
     

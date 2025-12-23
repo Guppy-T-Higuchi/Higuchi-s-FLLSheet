@@ -23,7 +23,6 @@ body {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    position: relative; /* フッターの基準点 */
     /* 自動スケーリング用 */
     transform-origin: top left;
     transition: transform 0.3s ease;
@@ -318,6 +317,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative; /* フッターの基準点 */
 }
 
 .score-display {
@@ -343,21 +343,21 @@ body {
     line-height: 1;
 }
 
-.footer {
+.score-result .footer {
     position: absolute;
-    bottom: 4px;
-    right: 4px;
+    bottom: 2px;
+    right: 3px;
     font-size: 7px;
     color: #666;
-    z-index: 10;
+    text-align: right;
 }
 
-.footer a {
+.score-result .footer a {
     color: #666;
     text-decoration: none;
 }
 
-.footer a:hover {
+.score-result .footer a:hover {
     color: #4caf50;
     text-decoration: underline;
 }
