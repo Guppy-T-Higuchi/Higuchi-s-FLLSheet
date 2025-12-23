@@ -702,12 +702,14 @@ function autoScaleContent() {
             if (scale < 1) {
                 container.style.transformOrigin = 'top left';
                 container.style.transform = `scale(${scale})`;
-                // bodyの高さを調整してスクロールバーを防ぐ
-                document.body.style.minHeight = `${actualHeight * scale + 40}px`;
+                // bodyの高さを調整（スケール後のコンテナの高さ + 余白）
+                const scaledHeight = actualHeight * scale;
+                document.body.style.minHeight = `${scaledHeight + 60}px`;
                 console.log(`✓ 自動スケーリング適用: ${(scale * 100).toFixed(1)}%`);
+                console.log(`元の高さ: ${actualHeight}px, 縮小後: ${scaledHeight.toFixed(0)}px`);
             } else {
                 container.style.transform = 'scale(1)';
-                document.body.style.minHeight = '';
+                document.body.style.minHeight = `${actualHeight + 40}px`;
                 console.log('✓ 自動スケーリング不要: コンテンツはA4サイズ内に収まっています');
             }
         }, 50);

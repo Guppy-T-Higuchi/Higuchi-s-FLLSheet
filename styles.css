@@ -23,6 +23,7 @@ body {
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    overflow: visible; /* コンテンツが欠けないようにする */
     /* 自動スケーリング用 */
     transform-origin: top left;
     transition: transform 0.3s ease;
