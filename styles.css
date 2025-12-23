@@ -348,7 +348,7 @@ body {
     position: absolute;
     bottom: 1px;
     right: 2px;
-    font-size: 6px;
+    font-size: 7px;
     color: #999;
     text-align: right;
     line-height: 1;
@@ -393,6 +393,9 @@ body {
         margin: 0;
         page-break-after: avoid;
         page-break-before: avoid;
+        /* 縦方向にさらに1%縮小 */
+        transform: scaleY(0.99);
+        transform-origin: top center;
     }
     
     .header,
