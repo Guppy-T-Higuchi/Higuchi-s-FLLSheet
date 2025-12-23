@@ -232,8 +232,8 @@ function insertFixedSections() {
         <h2 class="mission-title">採点結果</h2>
         <div class="mission-content">
             <div class="score-display">
-                <span class="score-label">点</span>
                 <span class="score-value" id="total-score">0</span>
+                <span class="score-label">点</span>
             </div>
         </div>
     `;
