@@ -5,54 +5,29 @@
   },
   "missions": [
     {
-      "name": "サンゴの苗床",
+      "name": "表面清掃",
       "hasPenalty": true,
       "criteria": [
         {
-          "description": "サンゴの木がサポートの上にある",
+          "description": "土層が完全に取り除かれ、マットに接触している",
+          "type": "number",
+          "min": 0,
+          "max": 2,
+          "pointsPerUnit": 10
+        },
+        {
+          "description": "考古学者の発掘ブラシが発掘現場に接触していない",
           "type": "boolean",
           "points": 10
-        },
-        {
-          "description": "サンゴの木の底がホルダーの中にある",
-          "type": "boolean",
-          "points": 15
-        },
-        {
-          "description": "サンゴの芽が上を向いている",
-          "type": "boolean",
-          "points": 20
         }
       ]
     },
     {
-      "name": "サメ",
+      "name": "地図の露出",
       "hasPenalty": false,
       "criteria": [
         {
-          "description": "サメが洞窟に触れていない",
-          "type": "boolean",
-          "points": 15
-        },
-        {
-          "description": "サメがマットに触れ、生息地に部分的に入っている",
-          "type": "boolean",
-          "points": 20,
-          "dependsOn": 0
-        }
-      ]
-    },
-    {
-      "name": "サンゴ礁",
-      "hasPenalty": true,
-      "criteria": [
-        {
-          "description": "サンゴ礁が上を向いており、マットに触れていない",
-          "type": "boolean",
-          "points": 20
-        },
-        {
-          "description": "サンゴ礁の断片が直立しており、ホームの外側でマットに接触している:",
+          "description": "表土のセクションが完全に取り除かれている",
           "type": "number",
           "min": 0,
           "max": 3,
@@ -61,181 +36,185 @@
       ]
     },
     {
-      "name": "スキューバダイバー",
+      "name": "鉱坑の探査",
       "hasPenalty": false,
       "criteria": [
         {
-          "description": "スキューバダイバーがサンゴの苗床に触れていない",
+          "description": "自チームのトロッコが相手チームのフィールド上にある",
           "type": "boolean",
-          "points": 15
+          "points": 30
         },
         {
-          "description": "スキューバダイバーがサンゴ礁のサポートの上にある",
+          "description": "相手チームのトロッコが自チームのフィールド上にある:",
           "type": "boolean",
-          "points": 20,
+          "points": 10,
           "dependsOn": 0
         }
       ]
     },
     {
-      "name": "アンコウ",
+      "name": "慎重な回収",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "貴重な遺物が鉱山に接触していない",
+          "type": "boolean",
+          "points": 30
+        },
+        {
+          "description": "両方の支柱が立っている",
+          "type": "boolean",
+          "points": 10
+        }
+      ]
+    },
+    {
+      "name": "誰が住んでいた？",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "床がまっすぐ上を向いている",
+          "type": "boolean",
+          "points": 30
+        }
+      ]
+    },
+    {
+      "name": "鍛冶場",
       "hasPenalty": false,
       "criteria": [
         {
-          "description": "アンコウが沈没船の中にラッチされている",
-          "type": "boolean",
-          "points": 25
-        }
-      ]
-    },
-    {
-      "name": "マスト上げ",
-      "hasPenalty": true,
-      "criteria": [
-        {
-          "description": "沈没船のマストが完全に上がっている",
-          "type": "boolean",
-          "points": 20
-        }
-      ]
-    },
-    {
-      "name": "クラーケンの宝",
-      "hasPenalty": true,
-      "criteria": [
-        {
-          "description": "宝箱がクラーケンの巣の外に完全に出ている",
-          "type": "boolean",
-          "points": 25
-        }
-      ]
-    },
-    {
-      "name": "人工生息地",
-      "hasPenalty": true,
-      "criteria": [
-        {
-          "description": "人工生息地のスタックセグメントが完全に水平であり直立している:",
+          "description": "鉱石が鍛冶場に接触していない",
           "type": "number",
           "min": 0,
-          "max": 4,
+          "max": 3,
           "pointsPerUnit": 10
         }
       ]
     },
     {
-      "name": "予期せぬ遭遇",
+      "name": "力仕事",
       "hasPenalty": false,
       "criteria": [
         {
-          "description": "未知の生物が解放されている",
+          "description": "石臼が台座に接触していない",
           "type": "boolean",
-          "points": 15
-        },
-        {
-          "description": "未知の生物が冷湧出域に部分的に入っている",
-          "type": "boolean",
-          "points": 20
+          "points": 30
         }
       ]
     },
     {
-      "name": "潜水艇の派遣",
-      "hasPenalty": true,
-      "criteria": [
-        {
-          "description": "自チームの黄色い旗が下がっている",
-          "type": "boolean",
-          "points": 15
-        },
-        {
-          "description": "潜水艇が相手フィールドに明確に接近している",
-          "type": "boolean",
-          "points": 20
-        }
-      ]
-    },
-    {
-      "name": "超音波探索",
+      "name": "サイロ",
       "hasPenalty": false,
       "criteria": [
         {
-          "description": "クジラの見えている数:",
+          "description": "保存食がサイロの外にある",
           "type": "number",
           "min": 0,
-          "max": 2,
-          "pointsPerUnit": 15
-        }
-      ]
-    },
-    {
-      "name": "クジラの餌やり",
-      "hasPenalty": true,
-      "criteria": [
-        {
-          "description": "オキアミがクジラの口に少しでもインしている数:",
-          "type": "number",
-          "min": 0,
-          "max": 5,
+          "max": 3,
           "pointsPerUnit": 10
         }
       ]
     },
     {
-      "name": "船の航路の変更",
-      "hasPenalty": false,
-      "criteria": [
-        {
-          "description": "船が新しい航路上にあり、マットに触れている",
-          "type": "boolean",
-          "points": 20
-        }
-      ]
-    },
-    {
-      "name": "サンプル採取",
-      "hasPenalty": false,
-      "criteria": [
-        {
-          "description": "水サンプルがエリアの外に完全に出ている",
-          "type": "boolean",
-          "points": 15
-        },
-        {
-          "description": "海底サンプルが海底に触れていない",
-          "type": "boolean",
-          "points": 15
-        },
-        {
-          "description": "プランクトンサンプルがケルプの森に触れていない",
-          "type": "boolean",
-          "points": 15
-        },
-        {
-          "description": "トライデントが沈没船に接触していない数:",
-          "type": "number",
-          "min": 0,
-          "max": 2,
-          "pointsPerUnit": 10
-        }
-      ]
-    },
-    {
-      "name": "調査船",
+      "name": "何を売っていた？",
       "hasPenalty": true,
       "criteria": [
         {
-          "description": "以下のものが調査船の貨物エリアに少しでもインしている数:",
-          "type": "number",
-          "min": 0,
-          "max": 6,
-          "pointsPerUnit": 10,
-          "note": "サンプル×3, トライデント×2, 宝箱×1"
+          "description": "屋根が完全に持ち上がっている",
+          "type": "boolean",
+          "points": 20
         },
         {
-          "description": "ポートラッチが調査船のループに部分的に入っている",
+          "description": "市場の交易品が持ち上がっている",
           "type": "boolean",
-          "points": 25
+          "points": 10
+        }
+      ]
+    },
+    {
+      "name": "はかり",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "はかりが傾き、マットに接触している",
+          "type": "boolean",
+          "points": 20
+        },
+        {
+          "description": "はかりの皿が完全に取り除かれている",
+          "type": "boolean",
+          "points": 10
+        }
+      ]
+    },
+    {
+      "name": "港の遺物",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "遺物が地表の上に持ち上がっている",
+          "type": "boolean",
+          "points": 20
+        },
+        {
+          "description": "クレーンの旗が少しでも下がっている",
+          "type": "boolean",
+          "points": 10,
+          "dependsOn": 0
+        }
+      ]
+    },
+    {
+      "name": "船の救出",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "砂が完全に取り除かれている",
+          "type": "boolean",
+          "points": 20
+        },
+        {
+          "description": "船が完全に持ち上がっている",
+          "type": "boolean",
+          "points": 10
+        }
+      ]
+    },
+    {
+      "name": "像の復元",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "像が完全に持ち上がっている",
+          "type": "boolean",
+          "points": 30
+        }
+      ]
+    },
+    {
+      "name": "フォーラム",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "遺物がマットに接触しており、一部がフォーラムにインしている",
+          "type": "number",
+          "min": 0,
+          "max": 7,
+          "pointsPerUnit": 5
+        }
+      ]
+    },
+    {
+      "name": "発掘現場のマーキング",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "発掘現場が以下の条件を満たしている。旗が少しでも発掘現場に入っており、マットに接触している",
+          "type": "number",
+          "min": 0,
+          "max": 3,
+          "pointsPerUnit": 10
         }
       ]
     }

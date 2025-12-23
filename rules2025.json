@@ -37,7 +37,7 @@
     },
     {
       "name": "鉱坑の探査",
-      "hasPenalty": true,
+      "hasPenalty": false,
       "criteria": [
         {
           "description": "自チームのトロッコが相手チームのフィールド上にある",
@@ -70,7 +70,7 @@
     },
     {
       "name": "誰が住んでいた？",
-      "hasPenalty": false,
+      "hasPenalty": true,
       "criteria": [
         {
           "description": "床がまっすぐ上を向いている",
@@ -94,7 +94,7 @@
     },
     {
       "name": "力仕事",
-      "hasPenalty": true,
+      "hasPenalty": false,
       "criteria": [
         {
           "description": "石臼が台座に接触していない",
@@ -105,7 +105,7 @@
     },
     {
       "name": "サイロ",
-      "hasPenalty": true,
+      "hasPenalty": false,
       "criteria": [
         {
           "description": "保存食がサイロの外にある",
@@ -167,7 +167,7 @@
     },
     {
       "name": "船の救出",
-      "hasPenalty": false,
+      "hasPenalty": true,
       "criteria": [
         {
           "description": "砂が完全に取り除かれている",
@@ -194,7 +194,7 @@
     },
     {
       "name": "フォーラム",
-      "hasPenalty": false,
+      "hasPenalty": true,
       "criteria": [
         {
           "description": "遺物がマットに接触しており、一部がフォーラムにインしている",
