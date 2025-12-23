@@ -370,19 +370,28 @@ body {
         margin: 5mm;
     }
     
+    * {
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
+    }
+    
     html {
         background-color: white;
         padding: 0;
         margin: 0;
+        height: 100%;
+        overflow: hidden;
     }
     
     body {
         background-color: white;
         padding: 0;
         margin: 0;
+        height: 100%;
         /* 印刷時に96%に縮小して、縁が欠けても内容が収まるようにする */
         zoom: 0.96;
         overflow: hidden;
+        position: relative;
     }
     
     .container {
@@ -391,34 +400,42 @@ body {
         width: 100% !important;
         max-width: 100% !important;
         height: auto !important;
-        max-height: 100vh !important;
+        max-height: calc(100vh - 10mm) !important;
         min-height: auto !important;
-        margin: 0;
-        overflow: hidden;
-        page-break-after: auto;
-        page-break-inside: avoid;
+        margin: 0 !important;
+        overflow: hidden !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
     }
     
-    .header,
+    .header {
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+    }
+    
     .main-content {
-        page-break-inside: avoid;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
     }
     
     .missions-wrapper {
-        page-break-inside: avoid;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
     }
     
     .missions-column {
-        page-break-inside: avoid;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
     }
     
     .mission-section {
-        page-break-inside: avoid;
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
     }
     
     .score-result {
-        page-break-before: avoid;
-        page-break-after: avoid;
+        page-break-before: avoid !important;
+        page-break-after: avoid !important;
     }
 }
 
