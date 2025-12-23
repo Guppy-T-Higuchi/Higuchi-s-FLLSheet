@@ -1,6 +1,9 @@
 // ルールデータを読み込む
 let rulesData = null;
 
+// グローバルイベントリスナーフラグ
+let eventListenersInitialized = false;
+
 // ページ読み込み時にルールを読み込む
 document.addEventListener('DOMContentLoaded', async () => {
     // JSON読み込みボタンのイベントリスナーを設定
@@ -28,6 +31,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     });
+    
+    // グローバルイベントリスナーを1回だけ設定
+    if (!eventListenersInitialized) {
+        // すべての入力にイベントリスナーを追加
+        document.addEventListener('input', handleInputChange);
+        document.addEventListener('change', handleInputChange);
+        eventListenersInitialized = true;
+    }
     
     // ページ読み込み時に固定セクションを右下に配置
     // 少し遅延させてDOMが完全に読み込まれた後に実行
@@ -90,6 +101,12 @@ function clearContent() {
     const missionsRight = document.getElementById('missions-right');
     const rightMissions = missionsRight.querySelectorAll('.mission-section:not(.fixed-section):not(.score-result)');
     rightMissions.forEach(mission => mission.remove());
+    
+    // スコアをリセット
+    const totalScoreElement = document.getElementById('total-score');
+    if (totalScoreElement) {
+        totalScoreElement.textContent = '0';
+    }
 }
 
 // アプリケーションの初期化
@@ -118,10 +135,6 @@ function initializeApp() {
         
         renderGraciousProfessionalism();
         console.log('Gracious Professionalismをレンダリング完了');
-        
-        // すべての入力にイベントリスナーを追加
-        document.addEventListener('input', handleInputChange);
-        document.addEventListener('change', handleInputChange);
         
         // 依存関係を初期化（少し遅延させて確実にDOMに追加された後に実行）
         setTimeout(() => {
