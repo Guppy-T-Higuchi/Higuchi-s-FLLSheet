@@ -1,0 +1,220 @@
+{
+  "equipmentInspection": {
+    "description": "当時は装備の点検ボーナスは存在しませんでした。この項目はどちらを選択しても変わりません。",
+    "points": 0
+  },
+  "missions": [
+    {
+      "name": "ギプス",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "骨をそろえ、ギプスを載せる",
+          "type": "boolean",
+          "points": 25
+        }        
+      ]
+    },
+    {
+      "name": "骨の修復",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "ブリッジを骨に入れる",
+          "type": "boolean",
+          "points": 15
+        },
+        {
+          "description": "修復した足でボールを蹴り、ボールがゴールに入る",
+          "type": "boolean",
+          "points": 25,
+          "dependsOn": 0
+        }
+      ]
+    },
+    {
+      "name": "血液検査",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "注射器がホームにある",
+          "type": "boolean",
+          "points": 25
+        },
+        {
+          "description": "白血球3個が患者エリアにある",
+          "type": "boolean",
+          "points": 15,
+          "dependsOn": 0
+        }
+      ]
+    },
+    {
+      "name": "ガン細胞",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "一部のガン細胞が北向き、残りは上向きのみである",
+          "type": "boolean",
+          "points": 20
+        },
+        {
+          "description": "すべてのガン細胞が北向きになっている",
+          "type": "boolean",
+          "points": 5,
+          "dependsOn": 0
+        }
+      ]
+    },
+    {
+      "name": "特許",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "ロボットアームで特許を掴む",
+          "type": "boolean",
+          "points": 25
+        }
+      ]
+    },
+    {
+      "name": "心臓パッチ",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "心臓パッチが完全に心臓内にある",
+          "type": "boolean",
+          "points": 25
+        }
+      ]
+    },
+    {
+      "name": "ペースメーカー",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "ペースメーカーのチューブが心臓内にあり、本体は心臓の外にある",
+          "type": "boolean",
+          "points": 25
+        }
+      ]
+    },
+    {
+      "name": "神経マッピング",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "脳の東側の神経が伸びている",
+          "type": "boolean",
+          "points": 15
+        }
+      ]
+    },
+    {
+      "name": "思考で操作",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "ドアを半分以上開ける",
+          "type": "boolean",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "name": "薬箱とディスペンサー",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "ディスペンサーから青と白の薬が全て排出されており、またピンクの薬は排出されていない",
+          "type": "boolean",
+          "points": 25
+        },
+        {
+          "description": "青と白の薬が各1個以上入った薬箱が患者エリアにある",
+          "type": "boolean",
+          "points": 5,
+          "dependsOn": 0
+        }
+      ]
+    },
+    {
+      "name": "ロボットの感度",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "重りが持ち上がっている",
+          "type": "boolean",
+          "points": 25
+        }
+      ]
+    },
+    {
+      "name": "プロのチームワーク",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "医師と技師を患者エリアへ運び、患者と3人が患者エリア内で揃う",
+          "type": "boolean",
+          "points": 25
+        }
+      ]
+    },
+    {
+      "name": "義眼",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "義眼が1個以上、中央の人物の上半身に部分的にインしている",
+          "type": "boolean",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "name": "血管手術",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "ステントが血管に挿入されており、血管が完全に修復されている",
+          "type": "boolean",
+          "points": 25
+        }
+      ]
+    }
+  ],
+  "precisionTokens": {
+    "description": "競技終了時に残っている赤血球の数:",
+    "min": 0,
+    "max": 8,
+    "pointsTable": {
+      "8": 40,
+      "7": 35,
+      "6": 30,
+      "5": 25,
+      "4": 20,
+      "3": 15,
+      "2": 10,
+      "1": 5,
+      "0": 0
+    }
+  },
+  "graciousProfessionalism": {
+    "description": "ロボットゲームで示されたGracious Professionalism®",
+    "options": [
+      {
+        "label": "改善の余地がある",
+        "points": 2
+      },
+      {
+        "label": "達成している",
+        "points": 3
+      },
+      {
+        "label": "非常に優れている",
+        "points": 4
+      }
+    ]
+  }
+}
+
