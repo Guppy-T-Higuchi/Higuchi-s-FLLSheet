@@ -396,75 +396,45 @@ body {
 @media print {
     @page {
         size: A4 landscape;
-        margin: 5mm;
+        margin: 0;
     }
-    
+
     html, body {
         background-color: white;
         padding: 0;
         margin: 0;
-        height: auto;
-        max-height: 100vh;
-        overflow: hidden;
+        height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
+        overflow: visible;
     }
 
     body {
-        zoom: 0.96;
+        zoom: 0.95;
     }
-    
+
     .container {
         box-shadow: none;
         padding: 8px;
         width: 100% !important;
         max-width: 100% !important;
         height: auto !important;
-        max-height: 100vh !important;
-        min-height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
         margin: 0;
-        overflow: hidden;
-        page-break-after: avoid !important;
-        page-break-inside: avoid;
+        overflow: visible;
+        transform: none !important;
     }
-    
-    .header,
-    .main-content {
-        page-break-inside: avoid;
-        page-break-after: avoid;
-    }
-    
-    .missions-wrapper {
-        page-break-inside: avoid;
-        page-break-after: avoid;
-    }
-    
-    .missions-column {
-        page-break-inside: avoid;
-        page-break-after: avoid;
-    }
-    
-    .mission-section {
-        page-break-inside: avoid;
-        page-break-after: avoid;
-    }
-    
-    .score-result {
-        page-break-before: avoid;
-        page-break-after: avoid;
-    }
-    
-    /* 2枚目のページを完全に防止 */
-    * {
-        page-break-after: avoid !important;
-    }
-    
-    .container::after {
-        content: none !important;
+
+    .fixed-sections-spacer {
+        flex: 0 0 0px !important;
+        min-height: 0 !important;
+        height: 0 !important;
     }
 
     .drum-picker-overlay {
         display: none !important;
         height: 0 !important;
-        overflow: hidden !important;
     }
 }
 
