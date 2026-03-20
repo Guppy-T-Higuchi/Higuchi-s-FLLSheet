@@ -83,6 +83,33 @@ body {
     background-color: #fff;
 }
 
+.author-comment {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-height: 65px;
+    overflow: hidden;
+    font-size: 9px;
+    line-height: 1.4;
+    color: #555;
+    padding: 2px 4px;
+    text-align: right;
+    align-self: flex-start;
+}
+
+.author-comment:empty {
+    display: none;
+}
+
+.author-comment a {
+    color: #007aff;
+    text-decoration: underline;
+}
+
+.author-comment-overflow {
+    -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 60%, transparent 100%);
+}
+
 .info-table {
     width: auto;
     border-collapse: collapse;

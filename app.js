@@ -141,6 +141,49 @@ function setupDrumPickerTouchHandlers() {
 }
 // ===== ドラムピッカー ここまで =====
 
+// ===== comment.md 読み込み =====
+/** Markdownテキストをごく簡易的にHTMLに変換（リンクと改行のみ） */
+function simpleMarkdownToHtml(md) {
+    let html = md
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    // [text](url) → <a>
+    html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,
+        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    // 生URL → <a>
+    html = html.replace(/(^|[\s>])(https?:\/\/[^\s<]+)/g,
+        '$1<a href="$2" target="_blank" rel="noopener noreferrer">$2</a>');
+    // 改行
+    html = html.replace(/\n/g, '<br>');
+    return html;
+}
+
+/** comment.md を読み込んで右上に表示する */
+async function loadAuthorComment() {
+    const container = document.getElementById('author-comment');
+    if (!container) return;
+
+    try {
+        const res = await fetch('comment.md');
+        if (!res.ok) return;
+        const md = (await res.text()).trim();
+        if (!md) return;
+
+        container.innerHTML = simpleMarkdownToHtml(md);
+
+        // テキストがはみ出す場合は省略記号を付ける（max-height超過チェック）
+        requestAnimationFrame(() => {
+            if (container.scrollHeight > container.clientHeight) {
+                container.classList.add('author-comment-overflow');
+            }
+        });
+    } catch (e) {
+        // comment.md が無い場合は何も表示しない
+    }
+}
+// ===== comment.md ここまで =====
+
 // ページ読み込み時にルールを読み込む
 document.addEventListener('DOMContentLoaded', async () => {
     // JSON読み込みボタンのイベントリスナーを設定
@@ -195,6 +238,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ドラムピッカーを初期化（タッチデバイス用）
     createDrumPicker();
     setupDrumPickerTouchHandlers();
+
+    // 製作者コメントを読み込み
+    loadAuthorComment();
 
     // 初期読み込み（rules.json）
     loadRulesFile('rules.json');
