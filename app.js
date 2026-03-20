@@ -4,6 +4,143 @@ let rulesData = null;
 // グローバルイベントリスナーフラグ
 let eventListenersInitialized = false;
 
+// ===== ドラムピッカー =====
+let drumPickerTargetInput = null;
+
+/** タッチデバイス（iPad/iPhone等）かどうかを判定 */
+function isTouchDevice() {
+    return navigator.maxTouchPoints > 0 || 'ontouchstart' in window;
+}
+
+/** ドラムピッカーのHTML要素を生成してbodyに追加（1回だけ呼ぶ） */
+function createDrumPicker() {
+    if (document.getElementById('drum-picker-overlay')) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'drum-picker-overlay';
+    overlay.id = 'drum-picker-overlay';
+    overlay.innerHTML = `
+        <div class="drum-picker-container">
+            <div class="drum-picker-header">
+                <span class="drum-picker-cancel" id="drum-picker-cancel">キャンセル</span>
+                <span class="drum-picker-title" id="drum-picker-title">数値を選択</span>
+                <span class="drum-picker-done" id="drum-picker-done">完了</span>
+            </div>
+            <div class="drum-picker-wheel-container">
+                <div class="drum-picker-wheel" id="drum-picker-wheel"></div>
+                <div class="drum-picker-selection-indicator"></div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    // 背景タップでキャンセル
+    overlay.addEventListener('touchend', (e) => {
+        if (e.target === overlay) hideDrumPicker(false);
+    });
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) hideDrumPicker(false);
+    });
+
+    document.getElementById('drum-picker-cancel').addEventListener('click', () => hideDrumPicker(false));
+    document.getElementById('drum-picker-done').addEventListener('click', () => hideDrumPicker(true));
+    document.getElementById('drum-picker-cancel').addEventListener('touchend', (e) => { e.preventDefault(); hideDrumPicker(false); });
+    document.getElementById('drum-picker-done').addEventListener('touchend', (e) => { e.preventDefault(); hideDrumPicker(true); });
+}
+
+/** ドラムピッカーを表示する */
+function showDrumPicker(inputEl) {
+    drumPickerTargetInput = inputEl;
+
+    const min = parseInt(inputEl.min) || 0;
+    const max = parseInt(inputEl.max) || 10;
+    const current = parseInt(inputEl.value);
+    const currentVal = isNaN(current) ? min : Math.max(min, Math.min(max, current));
+
+    const wheel = document.getElementById('drum-picker-wheel');
+    wheel.innerHTML = '';
+
+    // 上パディング
+    const padTop = document.createElement('div');
+    padTop.className = 'drum-picker-wheel-padding';
+    wheel.appendChild(padTop);
+
+    // 数値アイテムを生成
+    for (let i = min; i <= max; i++) {
+        const item = document.createElement('div');
+        item.className = 'drum-picker-item';
+        item.textContent = String(i);
+        item.dataset.value = i;
+        wheel.appendChild(item);
+    }
+
+    // 下パディング
+    const padBottom = document.createElement('div');
+    padBottom.className = 'drum-picker-wheel-padding';
+    wheel.appendChild(padBottom);
+
+    // ラベルを入力フィールドのlabelから取得（なければデフォルト）
+    const titleEl = document.getElementById('drum-picker-title');
+    const group = inputEl.closest('.number-input-group');
+    if (group) {
+        const lbl = group.querySelector('label');
+        titleEl.textContent = lbl ? lbl.textContent + ' 数値を選択' : '数値を選択';
+    } else {
+        titleEl.textContent = '数値を選択';
+    }
+
+    // オーバーレイ表示
+    const overlay = document.getElementById('drum-picker-overlay');
+    overlay.classList.add('active');
+
+    // 現在値の位置にスクロール
+    const itemIndex = currentVal - min;
+    // アニメーション後にスクロール
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            wheel.scrollTop = itemIndex * 44;
+        });
+    });
+}
+
+/** ドラムピッカーを閉じる。apply=trueなら値を確定する */
+function hideDrumPicker(apply) {
+    if (apply && drumPickerTargetInput) {
+        const wheel = document.getElementById('drum-picker-wheel');
+        const min = parseInt(drumPickerTargetInput.min) || 0;
+        const max = parseInt(drumPickerTargetInput.max) || 10;
+        const itemIndex = Math.round(wheel.scrollTop / 44);
+        const value = Math.max(min, Math.min(max, min + itemIndex));
+
+        drumPickerTargetInput.value = value;
+        // スコア再計算をトリガー
+        drumPickerTargetInput.dispatchEvent(new Event('input', { bubbles: true }));
+        drumPickerTargetInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    const overlay = document.getElementById('drum-picker-overlay');
+    if (overlay) overlay.classList.remove('active');
+    drumPickerTargetInput = null;
+}
+
+/** タッチデバイスで数値入力をタップしたときドラムピッカーを開くイベントを登録 */
+function setupDrumPickerTouchHandlers() {
+    if (!isTouchDevice()) return;
+
+    document.addEventListener('touchstart', function(e) {
+        const target = e.target;
+        if (
+            target.tagName === 'INPUT' &&
+            target.type === 'number' &&
+            !target.disabled
+        ) {
+            e.preventDefault();
+            showDrumPicker(target);
+        }
+    }, { passive: false });
+}
+// ===== ドラムピッカー ここまで =====
+
 // ページ読み込み時にルールを読み込む
 document.addEventListener('DOMContentLoaded', async () => {
     // JSON読み込みボタンのイベントリスナーを設定
@@ -55,6 +192,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, 250);
     });
     
+    // ドラムピッカーを初期化（タッチデバイス用）
+    createDrumPicker();
+    setupDrumPickerTouchHandlers();
+
     // 初期読み込み（rules.json）
     loadRulesFile('rules.json');
 });
