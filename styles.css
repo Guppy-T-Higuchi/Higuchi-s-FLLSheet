@@ -31,6 +31,7 @@ body {
 .header {
     margin-bottom: 2px;
     flex-shrink: 0;
+    position: relative;
 }
 
 .header-content {
@@ -84,8 +85,10 @@ body {
 }
 
 .author-comment {
-    flex: 1 1 auto;
-    min-width: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
+    max-width: 50%;
     max-height: 65px;
     overflow: hidden;
     font-size: 9px;
@@ -93,7 +96,6 @@ body {
     color: #555;
     padding: 2px 4px;
     text-align: right;
-    align-self: flex-start;
 }
 
 .author-comment:empty {
@@ -397,22 +399,17 @@ body {
         margin: 5mm;
     }
     
-    html {
+    html, body {
         background-color: white;
         padding: 0;
         margin: 0;
-        height: 100%;
+        height: auto;
+        max-height: 100vh;
         overflow: hidden;
     }
-    
+
     body {
-        background-color: white;
-        padding: 0;
-        margin: 0;
-        height: 100%;
-        /* 印刷時に96%に縮小して、縁が欠けても内容が収まるようにする */
         zoom: 0.96;
-        overflow: hidden;
     }
     
     .container {
@@ -462,6 +459,12 @@ body {
     
     .container::after {
         content: none !important;
+    }
+
+    .drum-picker-overlay {
+        display: none !important;
+        height: 0 !important;
+        overflow: hidden !important;
     }
 }
 
@@ -617,15 +620,6 @@ body {
         max-width: 1123px;
         transform: scale(0.9);
         transform-origin: top center;
-    }
-    
-    .header-content {
-        flex-direction: column;
-    }
-    
-    .team-info {
-        width: 100%;
-        margin-left: 0;
     }
     
     .missions-grid {
