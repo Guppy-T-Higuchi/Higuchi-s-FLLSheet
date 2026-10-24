@@ -120,6 +120,25 @@ FIRST LEGO LEAGUE CHALLENGE用の練習用スコア計算ツール
 - ローカルサーバー経由でアクセスするか、JSON読み込みボタンで手動読み込みしてください
 - A4横向きに自動的にスケーリングされます（項目数が多い場合）
 
+## ライセンス
+
+本ソフトウェアは [MIT License](LICENSE) のもとで公開しています。
+
+© 2026 GuppyPG・ShortLovers.　© ぐぴラボ
+
+### ライセンスの対象外
+
+以下のものは本ライセンスの対象外であり、それぞれの権利者に帰属します。
+
+- ルール定義ファイル（`rules*.json`）に含まれるミッション名・採点基準等の文章
+  - FIRST LEGO League Challenge の公式ルールに基づくものであり、その著作権は FIRST および各翻訳者等の権利者に帰属します
+- FIRST、FIRST LEGO League、LEGO、Gracious Professionalism 等の名称およびロゴ
+  - これらは各権利者の商標または登録商標です
+- `lib/` 以下の第三者ライブラリ
+  - それぞれ同梱のライセンスファイル（`lib/LICENSE.*`）に従います
+  - [html2canvas-pro](https://github.com/yorickshan/html2canvas-pro)（MIT License）
+  - [jsPDF](https://github.com/parallax/jsPDF)（MIT License）
+
 
 
 

@@ -1,0 +1,48 @@
+MIT License
+
+Copyright (c) 2026 GuppyPG・ShortLovers.
+Copyright (c) ぐぴラボ
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+--------------------------------------------------------------------------------
+
+本ライセンスの対象外 / Exclusions
+
+以下のものは本ライセンスの対象外であり、それぞれの権利者に帰属します。
+
+1. ルール定義ファイル（rules*.json）に含まれるミッション名・採点基準等の文章
+   FIRST LEGO League Challenge の公式ルールに基づくものであり、その著作権は
+   FIRST および各翻訳者等の権利者に帰属します。
+2. FIRST、FIRST LEGO League、LEGO、Gracious Professionalism 等の名称およびロゴ
+   これらは各権利者の商標または登録商標です。
+3. lib/ 以下の第三者ライブラリ
+   それぞれ同梱のライセンスファイル（lib/LICENSE.*）に従います。
+
+The following are not covered by this license and remain the property of their
+respective owners:
+
+1. Mission names, scoring criteria and other text in the rule definition files
+   (rules*.json), which are based on the official FIRST LEGO League Challenge
+   rules.
+2. The names and logos of FIRST, FIRST LEGO League, LEGO, Gracious
+   Professionalism, etc., which are trademarks or registered trademarks of their
+   respective owners.
+3. Third-party libraries under lib/, which are distributed under their own
+   licenses (see lib/LICENSE.*).
