@@ -323,8 +323,8 @@ function initializeApp() {
         renderGraciousProfessionalism();
         console.log('Gracious Professionalismをレンダリング完了');
 
-        // 左右カラムの高さが揃うようにミッションを振り分け直す
-        balanceMissionColumns();
+        // 左右カラムの高さが揃うようにミッションを振り分け直し、印刷用縮小率を事前に計算
+        refreshPrintLayout();
 
         // 依存関係を初期化（少し遅延させて確実にDOMに追加された後に実行）
         setTimeout(() => {
@@ -452,7 +452,7 @@ function balanceMissionColumns() {
     console.log(`カラム振り分け: 左 ミッション1-${bestSplit}、右 ミッション${bestSplit + 1}-${sections.length}`);
 }
 
-// 印刷直前に内容の高さを測り、A4横1枚に収まる縮小率を設定する
+// 内容の高さを測り、A4横1枚に収まる印刷用縮小率を設定する
 function updatePrintZoom() {
     const container = document.querySelector('.container');
     if (!container) return;
@@ -476,11 +476,27 @@ function updatePrintZoom() {
     console.log(`印刷用縮小率: ${zoom.toFixed(3)}（内容の高さ: ${contentHeight}px）`);
 }
 
-window.addEventListener('beforeprint', () => {
-    // フォント読み込み後の高さで振り分け直してから縮小率を計算
+// カラムの振り分けと印刷用縮小率をまとめて更新する
+function refreshPrintLayout() {
     balanceMissionColumns();
     updatePrintZoom();
+}
+
+// beforeprintが発火しない環境（iPadのSafari等）でも正しい縮小率になるよう、
+// 高さが変わりうるタイミングで事前に計算しておく
+window.addEventListener('load', refreshPrintLayout);
+if (document.fonts) {
+    // Webフォント（Typekit）は後から読み込まれるため、読み込み完了のたびに再計算
+    if (document.fonts.ready) document.fonts.ready.then(refreshPrintLayout);
+    if (document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', refreshPrintLayout);
+}
+window.addEventListener('resize', () => {
+    clearTimeout(refreshPrintLayout.timer);
+    refreshPrintLayout.timer = setTimeout(refreshPrintLayout, 250);
 });
+
+// 印刷直前にも最新の高さで再計算する（発火する環境のみ）
+window.addEventListener('beforeprint', refreshPrintLayout);
 
 // 固定セクションを右カラムに挿入
 function insertFixedSections() {
