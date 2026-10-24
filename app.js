@@ -184,6 +184,143 @@ async function loadAuthorComment() {
 }
 // ===== comment.md ここまで =====
 
+// ===== PDF保存 =====
+/** スクリプトを1回だけ読み込む（PDF保存ボタンが押されたときに初めて読み込む） */
+function loadScriptOnce(src) {
+    loadScriptOnce.cache = loadScriptOnce.cache || {};
+    if (!loadScriptOnce.cache[src]) {
+        loadScriptOnce.cache[src] = new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = () => {
+                delete loadScriptOnce.cache[src];
+                reject(new Error(`スクリプトの読み込みに失敗しました: ${src}`));
+            };
+            document.head.appendChild(script);
+        });
+    }
+    return loadScriptOnce.cache[src];
+}
+
+/** ファイル名に使えない文字・空白を「_」に置き換える */
+function sanitizeFileNamePart(text) {
+    return (text || '').trim().replace(/[\\/:*?"<>|\s]+/g, '_');
+}
+
+/** PDFのファイル名を作る（チームNo・ラウンドが空欄なら日時） */
+function buildPdfFileName() {
+    const parts = [
+        sanitizeFileNamePart(document.getElementById('teamNo').value),
+        sanitizeFileNamePart(document.getElementById('round').value)
+    ].filter(part => part);
+
+    if (parts.length === 0) {
+        const now = new Date();
+        const pad = (n) => String(n).padStart(2, '0');
+        parts.push(`${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`);
+    }
+    return `FLL_${parts.join('_')}.pdf`;
+}
+
+/** スコアシートを画像化し、A4横1枚のPDFとしてダウンロードする */
+async function saveAsPdf() {
+    const PDF_PAGE_MARGIN_MM = 3; // 印刷時（styles.cssの@page）と同じ余白
+    const CAPTURE_SCALE = 2;      // 画像化の解像度（2倍で約190dpi相当）
+
+    const button = document.getElementById('pdf-save-btn');
+    const container = document.querySelector('.container');
+    if (!button || !container) return;
+
+    const originalLabel = button.textContent;
+    const originalTransform = container.style.transform;
+    button.disabled = true;
+    button.textContent = 'PDF作成中...';
+
+    try {
+        await Promise.all([
+            loadScriptOnce('lib/html2canvas.min.js'),
+            loadScriptOnce('lib/jspdf.umd.min.js'),
+            loadScriptOnce('lib/pdf-images.js')
+        ]);
+
+        // 最新の高さでカラムを振り分けてから、画面用の縮小表示を外して画像化
+        refreshPrintLayout();
+        container.style.transform = 'none';
+
+        const canvas = await html2canvas(container, {
+            scale: CAPTURE_SCALE,
+            backgroundColor: '#ffffff',
+            logging: false,
+            // html2canvasは入力欄の値を描画しないことがあるため、画像化用の複製内だけ
+            // テキスト・数値入力を同じ見た目のspanに置き換える
+            onclone: (clonedDoc) => {
+                const clonedWindow = clonedDoc.defaultView;
+
+                // file://で開いた場合に画像ファイルが別オリジン扱いになり画像化できないため、
+                // 埋め込み画像（lib/pdf-images.js）に差し替える
+                const embeddedImages = window.PDF_EMBEDDED_IMAGES;
+                if (embeddedImages) {
+                    clonedDoc.querySelectorAll('.title-image').forEach(img => {
+                        img.src = embeddedImages.title;
+                    });
+                    clonedDoc.querySelectorAll('.penalty-icon').forEach(icon => {
+                        icon.style.backgroundImage = `url("${embeddedImages.penaltyIcon}")`;
+                    });
+                }
+
+                clonedDoc.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
+                    const style = clonedWindow.getComputedStyle(input);
+                    // 複製には入力後の値が引き継がれないため、元の入力欄から値を取得
+                    const original = input.id ? document.getElementById(input.id) : null;
+                    const span = clonedDoc.createElement('span');
+                    span.textContent = original ? original.value : input.value;
+                    span.className = input.className;
+                    Object.assign(span.style, {
+                        display: 'inline-block',
+                        boxSizing: 'border-box',
+                        width: `${input.offsetWidth}px`,
+                        height: `${input.offsetHeight}px`,
+                        lineHeight: `${input.clientHeight}px`,
+                        padding: `0 ${style.paddingRight} 0 ${style.paddingLeft}`,
+                        border: style.border,
+                        backgroundColor: style.backgroundColor,
+                        color: style.color,
+                        fontFamily: style.fontFamily,
+                        fontSize: style.fontSize,
+                        textAlign: style.textAlign,
+                        verticalAlign: 'middle',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden'
+                    });
+                    input.replaceWith(span);
+                });
+            }
+        });
+
+        // A4横の余白内に、縦横比を保って収める（横方向は中央寄せ）
+        const pdf = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+        const maxWidth = pdf.internal.pageSize.getWidth() - PDF_PAGE_MARGIN_MM * 2;
+        const maxHeight = pdf.internal.pageSize.getHeight() - PDF_PAGE_MARGIN_MM * 2;
+        const ratio = Math.min(maxWidth / canvas.width, maxHeight / canvas.height);
+        const imageWidth = canvas.width * ratio;
+        const imageHeight = canvas.height * ratio;
+        pdf.addImage(canvas, 'PNG',
+            PDF_PAGE_MARGIN_MM + (maxWidth - imageWidth) / 2, PDF_PAGE_MARGIN_MM,
+            imageWidth, imageHeight, undefined, 'FAST');
+
+        pdf.save(buildPdfFileName());
+    } catch (error) {
+        console.error('PDFの作成に失敗しました:', error);
+        alert('PDFの作成に失敗しました。');
+    } finally {
+        container.style.transform = originalTransform;
+        button.disabled = false;
+        button.textContent = originalLabel;
+    }
+}
+// ===== PDF保存 ここまで =====
+
 // ページ読み込み時にルールを読み込む
 document.addEventListener('DOMContentLoaded', async () => {
     // JSON読み込みボタンのイベントリスナーを設定
@@ -212,6 +349,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
     
+    // PDF保存ボタン
+    document.getElementById('pdf-save-btn').addEventListener('click', saveAsPdf);
+
     // グローバルイベントリスナーを1回だけ設定
     if (!eventListenersInitialized) {
         // すべての入力にイベントリスナーを追加

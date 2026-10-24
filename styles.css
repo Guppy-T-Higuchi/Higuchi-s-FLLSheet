@@ -77,6 +77,11 @@ body {
     background-color: #3d8b40;
 }
 
+.json-load-btn:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
 .team-info {
     flex: 0 0 auto;
     border: 1px solid #333;
