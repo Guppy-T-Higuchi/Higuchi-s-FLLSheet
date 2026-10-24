@@ -396,7 +396,8 @@ body {
 @media print {
     @page {
         size: A4 landscape;
-        margin: 0;
+        /* プリンターの印刷不可領域で端が切れないための余白。app.jsのPRINT_PAGE_MARGIN_MMと合わせること */
+        margin: 3mm;
     }
 
     html, body {

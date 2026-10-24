@@ -457,7 +457,10 @@ function updatePrintZoom() {
     const container = document.querySelector('.container');
     if (!container) return;
 
-    const A4_LANDSCAPE_HEIGHT = 793; // 210mm at 96dpi（端数切り捨て）
+    const A4_LANDSCAPE_HEIGHT_MM = 210;
+    const PRINT_PAGE_MARGIN_MM = 3;  // styles.cssの@pageのmarginと合わせること
+    const MM_TO_PX = 96 / 25.4;
+    const PRINTABLE_HEIGHT = Math.floor((A4_LANDSCAPE_HEIGHT_MM - PRINT_PAGE_MARGIN_MM * 2) * MM_TO_PX);
     const SAFETY_MARGIN = 10;        // ブラウザ差・丸め誤差用の余裕
     const PRINT_PADDING_DIFF = 8;    // 印刷時の.containerのpadding増加分（4px→8px、上下）
     const DEFAULT_ZOOM = 0.95;
@@ -468,7 +471,7 @@ function updatePrintZoom() {
     const contentHeight = container.offsetHeight + PRINT_PADDING_DIFF;
     container.style.minHeight = originalMinHeight;
 
-    const zoom = Math.min(DEFAULT_ZOOM, (A4_LANDSCAPE_HEIGHT - SAFETY_MARGIN) / contentHeight);
+    const zoom = Math.min(DEFAULT_ZOOM, (PRINTABLE_HEIGHT - SAFETY_MARGIN) / contentHeight);
     document.documentElement.style.setProperty('--print-zoom', zoom.toFixed(3));
     console.log(`印刷用縮小率: ${zoom.toFixed(3)}（内容の高さ: ${contentHeight}px）`);
 }
@@ -678,6 +681,7 @@ function renderMissions() {
                 numberInput.name = `mission-${index + 1}-criteria-${critIndex}`;
                 numberInput.min = criterion.min || 0;
                 numberInput.max = criterion.max || 10;
+                numberInput.dataset.originalMax = criterion.max || 10; // 依存元の値で上限を絞った後の復元用
                 numberInput.value = criterion.min || 0;
                 numberInput.dataset.pointsPerUnit = criterion.pointsPerUnit || 1;
                 numberInput.dataset.maxPoints = criterion.maxPoints || (criterion.max * (criterion.pointsPerUnit || 1));
@@ -858,12 +862,20 @@ function isCriterionEarned(missionIndex, criterionIndex) {
 function updateCriterionState(criterionDiv) {
     const missionIndex = parseInt(criterionDiv.dataset.missionIndex);
     let isEnabled = true;
+    let parentNumberValue = null; // 依存元が数値入力の場合、その値（依存先の数値入力の上限になる）
 
-    // 依存関係：依存元が「はい」でない場合は無効
+    // 依存関係：依存元が「はい」（数値入力の場合は1以上）でない場合は無効
     if (criterionDiv.dataset.dependsOn !== undefined) {
         const dependsOnRadioName = `mission-${missionIndex + 1}-criteria-${criterionDiv.dataset.dependsOn}`;
-        const dependsOnRadio = document.querySelector(`input[name="${dependsOnRadioName}"]:checked`);
-        const isParentYes = dependsOnRadio && dependsOnRadio.value !== '0';
+        const dependsOnNumberInput = document.querySelector(`input[type="number"][name="${dependsOnRadioName}"]`);
+        let isParentYes;
+        if (dependsOnNumberInput) {
+            parentNumberValue = dependsOnNumberInput.disabled ? 0 : (parseInt(dependsOnNumberInput.value) || 0);
+            isParentYes = parentNumberValue > 0;
+        } else {
+            const dependsOnRadio = document.querySelector(`input[name="${dependsOnRadioName}"]:checked`);
+            isParentYes = dependsOnRadio && dependsOnRadio.value !== '0';
+        }
         console.log(`依存関係チェック: ${dependsOnRadioName}, 親が「はい」: ${isParentYes}`);
         if (!isParentYes) isEnabled = false;
     }
@@ -887,6 +899,15 @@ function updateCriterionState(criterionDiv) {
             console.log(`有効化: ${input.name || input.id}`);
             input.disabled = false;
             criterionDiv.classList.remove('criterion-disabled');
+
+            // 依存元が数値入力の場合、依存元で選択された数までしか選択できないようにする
+            if (parentNumberValue !== null && input.type === 'number') {
+                const originalMax = parseInt(input.dataset.originalMax) || 10;
+                input.max = Math.min(originalMax, parentNumberValue);
+                if ((parseInt(input.value) || 0) > parseInt(input.max)) {
+                    input.value = input.max;
+                }
+            }
         } else {
             // 親が「いいえ」・未選択、または排他の基準を獲得済みの場合、無効化
             console.log(`無効化: ${input.name || input.id}`);
