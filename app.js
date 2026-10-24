@@ -339,7 +339,7 @@ async function saveAsPdf() {
     const errors = [];
     try {
         await withStage('ライブラリ読み込み', () => Promise.all([
-            loadScriptOnce('lib/html2canvas.min.js'),
+            loadScriptOnce('lib/html2canvas-pro.min.js'),
             loadScriptOnce('lib/jspdf.umd.min.js'),
             loadScriptOnce('lib/pdf-images.js')
         ]));
