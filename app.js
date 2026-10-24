@@ -223,10 +223,109 @@ function buildPdfFileName() {
     return `FLL_${parts.join('_')}.pdf`;
 }
 
+/** html2canvasの複製に対する前処理（画像の差し替え・入力欄の置き換え） */
+function prepareCloneForCapture(clonedDoc) {
+    const clonedWindow = clonedDoc.defaultView;
+
+    // file://で開いた場合に画像ファイルが別オリジン扱いになり画像化できないため、
+    // 埋め込み画像（lib/pdf-images.js）に差し替える
+    const embeddedImages = window.PDF_EMBEDDED_IMAGES;
+    if (embeddedImages) {
+        clonedDoc.querySelectorAll('.title-image').forEach(img => {
+            img.src = embeddedImages.title;
+        });
+        clonedDoc.querySelectorAll('.penalty-icon').forEach(icon => {
+            icon.style.backgroundImage = `url("${embeddedImages.penaltyIcon}")`;
+        });
+    }
+
+    // html2canvasは入力欄の値を描画しないことがあるため、
+    // テキスト・数値入力を同じ見た目のspanに置き換える
+    clonedDoc.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
+        const style = clonedWindow.getComputedStyle(input);
+        // 複製には入力後の値が引き継がれないため、元の入力欄から値を取得
+        const original = input.id ? document.getElementById(input.id) : null;
+        const span = clonedDoc.createElement('span');
+        span.textContent = original ? original.value : input.value;
+        span.className = input.className;
+        Object.assign(span.style, {
+            display: 'inline-block',
+            boxSizing: 'border-box',
+            width: `${input.offsetWidth}px`,
+            height: `${input.offsetHeight}px`,
+            lineHeight: `${input.clientHeight}px`,
+            padding: `0 ${style.paddingRight} 0 ${style.paddingLeft}`,
+            border: style.border,
+            backgroundColor: style.backgroundColor,
+            color: style.color,
+            fontFamily: style.fontFamily,
+            fontSize: style.fontSize,
+            textAlign: style.textAlign,
+            verticalAlign: 'middle',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden'
+        });
+        input.replaceWith(span);
+    });
+}
+
+/** エラーにどの段階で失敗したかを付けて投げ直す */
+function withStage(stage, fn) {
+    return Promise.resolve().then(fn).catch(error => {
+        const wrapped = new Error(`${stage}: ${error && error.name ? error.name + ': ' : ''}${error && error.message ? error.message : error}`);
+        wrapped.cause = error;
+        throw wrapped;
+    });
+}
+
+/** 指定した倍率でスコアシートを画像化し、A4横1枚のPDFを作る */
+async function createPdfAtScale(container, scale) {
+    const PDF_PAGE_MARGIN_MM = 3; // 印刷時（styles.cssの@page）と同じ余白
+
+    const canvas = await withStage('画像化', async () => {
+        const result = await html2canvas(container, {
+            scale: scale,
+            backgroundColor: '#ffffff',
+            logging: false,
+            onclone: prepareCloneForCapture
+        });
+        if (!result || !result.width || !result.height) {
+            throw new Error('画像が空です');
+        }
+        return result;
+    });
+
+    try {
+        return await withStage('PDF化', () => {
+            // メモリ不足の場合、toDataURLは空のデータ（"data:,"）を返すため明示的に確認する
+            const dataUrl = canvas.toDataURL('image/png');
+            if (dataUrl.length < 100) {
+                throw new Error(`画像データを取得できません（${canvas.width}x${canvas.height}px、メモリ不足の可能性）`);
+            }
+
+            // A4横の余白内に、縦横比を保って収める（横方向は中央寄せ）
+            const pdf = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+            const maxWidth = pdf.internal.pageSize.getWidth() - PDF_PAGE_MARGIN_MM * 2;
+            const maxHeight = pdf.internal.pageSize.getHeight() - PDF_PAGE_MARGIN_MM * 2;
+            const ratio = Math.min(maxWidth / canvas.width, maxHeight / canvas.height);
+            const imageWidth = canvas.width * ratio;
+            const imageHeight = canvas.height * ratio;
+            pdf.addImage(dataUrl, 'PNG',
+                PDF_PAGE_MARGIN_MM + (maxWidth - imageWidth) / 2, PDF_PAGE_MARGIN_MM,
+                imageWidth, imageHeight, undefined, 'FAST');
+            return pdf;
+        });
+    } finally {
+        // 次の倍率で再試行する前にメモリを解放する
+        canvas.width = 0;
+        canvas.height = 0;
+    }
+}
+
 /** スコアシートを画像化し、A4横1枚のPDFとしてダウンロードする */
 async function saveAsPdf() {
-    const PDF_PAGE_MARGIN_MM = 3; // 印刷時（styles.cssの@page）と同じ余白
-    const CAPTURE_SCALE = 3;      // 画像化の解像度（3倍で約295dpi相当。4倍はiPadのcanvas上限に近いため不可）
+    // 画像化の倍率（3倍で約295dpi相当）。iPad等でメモリ不足により失敗した場合は順に下げて再試行する
+    const CAPTURE_SCALES = [3, 2, 1.5];
 
     const button = document.getElementById('pdf-save-btn');
     const container = document.querySelector('.container');
@@ -237,82 +336,38 @@ async function saveAsPdf() {
     button.disabled = true;
     button.textContent = 'PDF作成中...';
 
+    const errors = [];
     try {
-        await Promise.all([
+        await withStage('ライブラリ読み込み', () => Promise.all([
             loadScriptOnce('lib/html2canvas.min.js'),
             loadScriptOnce('lib/jspdf.umd.min.js'),
             loadScriptOnce('lib/pdf-images.js')
-        ]);
+        ]));
 
         // 最新の高さでカラムを振り分けてから、画面用の縮小表示を外して画像化
         refreshPrintLayout();
         container.style.transform = 'none';
 
-        const canvas = await html2canvas(container, {
-            scale: CAPTURE_SCALE,
-            backgroundColor: '#ffffff',
-            logging: false,
-            // html2canvasは入力欄の値を描画しないことがあるため、画像化用の複製内だけ
-            // テキスト・数値入力を同じ見た目のspanに置き換える
-            onclone: (clonedDoc) => {
-                const clonedWindow = clonedDoc.defaultView;
-
-                // file://で開いた場合に画像ファイルが別オリジン扱いになり画像化できないため、
-                // 埋め込み画像（lib/pdf-images.js）に差し替える
-                const embeddedImages = window.PDF_EMBEDDED_IMAGES;
-                if (embeddedImages) {
-                    clonedDoc.querySelectorAll('.title-image').forEach(img => {
-                        img.src = embeddedImages.title;
-                    });
-                    clonedDoc.querySelectorAll('.penalty-icon').forEach(icon => {
-                        icon.style.backgroundImage = `url("${embeddedImages.penaltyIcon}")`;
-                    });
-                }
-
-                clonedDoc.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
-                    const style = clonedWindow.getComputedStyle(input);
-                    // 複製には入力後の値が引き継がれないため、元の入力欄から値を取得
-                    const original = input.id ? document.getElementById(input.id) : null;
-                    const span = clonedDoc.createElement('span');
-                    span.textContent = original ? original.value : input.value;
-                    span.className = input.className;
-                    Object.assign(span.style, {
-                        display: 'inline-block',
-                        boxSizing: 'border-box',
-                        width: `${input.offsetWidth}px`,
-                        height: `${input.offsetHeight}px`,
-                        lineHeight: `${input.clientHeight}px`,
-                        padding: `0 ${style.paddingRight} 0 ${style.paddingLeft}`,
-                        border: style.border,
-                        backgroundColor: style.backgroundColor,
-                        color: style.color,
-                        fontFamily: style.fontFamily,
-                        fontSize: style.fontSize,
-                        textAlign: style.textAlign,
-                        verticalAlign: 'middle',
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden'
-                    });
-                    input.replaceWith(span);
-                });
+        let pdf = null;
+        for (const scale of CAPTURE_SCALES) {
+            try {
+                pdf = await createPdfAtScale(container, scale);
+                console.log(`PDFを倍率${scale}で作成しました`);
+                break;
+            } catch (error) {
+                console.warn(`倍率${scale}でのPDF作成に失敗しました:`, error);
+                errors.push(`倍率${scale}: ${error.message}`);
             }
-        });
+        }
+        if (!pdf) {
+            throw new Error('すべての倍率で失敗しました');
+        }
 
-        // A4横の余白内に、縦横比を保って収める（横方向は中央寄せ）
-        const pdf = new window.jspdf.jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-        const maxWidth = pdf.internal.pageSize.getWidth() - PDF_PAGE_MARGIN_MM * 2;
-        const maxHeight = pdf.internal.pageSize.getHeight() - PDF_PAGE_MARGIN_MM * 2;
-        const ratio = Math.min(maxWidth / canvas.width, maxHeight / canvas.height);
-        const imageWidth = canvas.width * ratio;
-        const imageHeight = canvas.height * ratio;
-        pdf.addImage(canvas, 'PNG',
-            PDF_PAGE_MARGIN_MM + (maxWidth - imageWidth) / 2, PDF_PAGE_MARGIN_MM,
-            imageWidth, imageHeight, undefined, 'FAST');
-
-        pdf.save(buildPdfFileName());
+        await withStage('保存', () => pdf.save(buildPdfFileName()));
     } catch (error) {
-        console.error('PDFの作成に失敗しました:', error);
-        alert('PDFの作成に失敗しました。');
+        console.error('PDFの作成に失敗しました:', error, errors);
+        const details = errors.length > 0 ? errors.join('\n') : error.message;
+        alert(`PDFの作成に失敗しました。\n\n${details}\n\n端末: ${navigator.userAgent}`);
     } finally {
         container.style.transform = originalTransform;
         button.disabled = false;
