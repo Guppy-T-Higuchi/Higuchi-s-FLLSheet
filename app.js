@@ -48,6 +48,41 @@ function createDrumPicker() {
     document.getElementById('drum-picker-done').addEventListener('touchend', (e) => { e.preventDefault(); hideDrumPicker(true); });
 }
 
+/**
+ * ドラムピッカーを「現在見えている範囲」（visual viewport）に合わせて配置する。
+ * position: fixed はピンチズーム中も拡大前の表示範囲を基準にするため、そのままだと
+ * 拡大して採点しているときにピッカーが画面外（下）に出て操作できなくなる。
+ * 見えている範囲に重ね、拡大率の逆数で縮小して常に同じ大きさで表示する。
+ */
+function positionDrumPickerOverlay() {
+    const overlay = document.getElementById('drum-picker-overlay');
+    const viewport = window.visualViewport;
+    if (!overlay || !viewport) return;
+
+    const scale = viewport.scale || 1;
+    Object.assign(overlay.style, {
+        left: `${viewport.offsetLeft}px`,
+        top: `${viewport.offsetTop}px`,
+        width: `${viewport.width * scale}px`,
+        height: `${viewport.height * scale}px`,
+        transform: `scale(${1 / scale})`,
+        transformOrigin: 'top left'
+    });
+}
+
+/** ドラムピッカーを開いている間、ズーム・スクロールに追従させる */
+function handleDrumPickerViewportChange() {
+    const overlay = document.getElementById('drum-picker-overlay');
+    if (overlay && overlay.classList.contains('active')) {
+        positionDrumPickerOverlay();
+    }
+}
+
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', handleDrumPickerViewportChange);
+    window.visualViewport.addEventListener('scroll', handleDrumPickerViewportChange);
+}
+
 /** ドラムピッカーを表示する */
 function showDrumPicker(inputEl) {
     drumPickerTargetInput = inputEl;
@@ -89,8 +124,9 @@ function showDrumPicker(inputEl) {
         titleEl.textContent = '数値を選択';
     }
 
-    // オーバーレイ表示
+    // オーバーレイ表示（現在見えている範囲に合わせて配置）
     const overlay = document.getElementById('drum-picker-overlay');
+    positionDrumPickerOverlay();
     overlay.classList.add('active');
 
     // 現在値の位置にスクロール
