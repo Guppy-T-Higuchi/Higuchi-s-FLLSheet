@@ -226,7 +226,7 @@ function buildPdfFileName() {
 /** スコアシートを画像化し、A4横1枚のPDFとしてダウンロードする */
 async function saveAsPdf() {
     const PDF_PAGE_MARGIN_MM = 3; // 印刷時（styles.cssの@page）と同じ余白
-    const CAPTURE_SCALE = 2;      // 画像化の解像度（2倍で約190dpi相当）
+    const CAPTURE_SCALE = 3;      // 画像化の解像度（3倍で約295dpi相当。4倍はiPadのcanvas上限に近いため不可）
 
     const button = document.getElementById('pdf-save-btn');
     const container = document.querySelector('.container');
