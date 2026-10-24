@@ -267,8 +267,10 @@ function prepareCloneForCapture(clonedDoc) {
     // 埋め込み画像（lib/pdf-images.js）に差し替える
     const embeddedImages = window.PDF_EMBEDDED_IMAGES;
     if (embeddedImages) {
+        // エディション用の埋め込み画像が無い場合は既定のタイトル画像を使う
+        const titleImage = embeddedImages[getCurrentEdition().titleEmbeddedImageKey] || embeddedImages.title;
         clonedDoc.querySelectorAll('.title-image').forEach(img => {
-            img.src = embeddedImages.title;
+            img.src = titleImage;
         });
         clonedDoc.querySelectorAll('.penalty-icon').forEach(icon => {
             icon.style.backgroundImage = `url("${embeddedImages.penaltyIcon}")`;
@@ -412,6 +414,46 @@ async function saveAsPdf() {
 }
 // ===== PDF保存 ここまで =====
 
+// ===== エディション =====
+// ルールJSONの "Edition" で切り替える。未記入・不明な値の場合は Challenge（現行仕様）
+const DEFAULT_EDITION = 'challenge';
+const EDITIONS = {
+    challenge: {
+        titleImage: 'title.png',
+        titleEmbeddedImageKey: 'title' // PDF保存用の埋め込み画像（lib/pdf-images.js）のキー
+    },
+    founder: {
+        titleImage: 'title_Founder.png',
+        titleEmbeddedImageKey: 'titleFounder'
+    }
+};
+
+/** 現在のルールのエディション設定を取得する */
+function getCurrentEdition() {
+    const requested = rulesData && rulesData.Edition !== undefined
+        ? String(rulesData.Edition).trim().toLowerCase()
+        : DEFAULT_EDITION;
+    if (!EDITIONS[requested]) {
+        console.warn(`不明なEditionです: ${rulesData.Edition}（${DEFAULT_EDITION}として扱います）`);
+        return EDITIONS[DEFAULT_EDITION];
+    }
+    return EDITIONS[requested];
+}
+
+/** エディションに応じてタイトル画像を切り替える（画像が無い場合は既定の画像を表示） */
+function applyEdition() {
+    const edition = getCurrentEdition();
+    const fallbackImage = EDITIONS[DEFAULT_EDITION].titleImage;
+    document.querySelectorAll('.title-image').forEach(img => {
+        img.onerror = () => {
+            img.onerror = null;
+            img.src = fallbackImage;
+        };
+        img.src = edition.titleImage;
+    });
+}
+// ===== エディション ここまで =====
+
 // ページ読み込み時にルールを読み込む
 document.addEventListener('DOMContentLoaded', async () => {
     // JSON読み込みボタンのイベントリスナーを設定
@@ -538,6 +580,8 @@ function initializeApp() {
     console.log('ミッション数:', rulesData.missions ? rulesData.missions.length : 0);
     
     try {
+        applyEdition();
+
         renderEquipmentInspection();
         console.log('装備の点検をレンダリング完了');
         
