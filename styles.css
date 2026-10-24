@@ -410,7 +410,8 @@ body {
     }
 
     body {
-        zoom: 0.95;
+        /* 印刷直前にapp.jsのupdatePrintZoom()が内容の高さから計算して設定する */
+        zoom: var(--print-zoom, 0.95);
     }
 
     .container {

@@ -1,0 +1,307 @@
+{
+  "equipmentInspection": {
+    "description": "競技前の点検時に、ロボットと全ての装備がどちらか一方の発進エリア完全に収まり、その高さが305mm以内であった",
+    "points": 20
+  },
+  "missions": [
+    {
+      "name": "ドローン調査",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "ドローンがマットに接触していない。",
+          "type": "boolean",
+          "points": 20
+        },
+        {
+          "description": "LiDAR マップが完全にひっくり返っており、スキャンマーカーが調査エリアに部分的にインしている。",
+          "type": "boolean",
+          "points": 10,
+          "dependsOn": 0
+        }
+      ]
+    },
+    {
+      "name": "弾ける種子",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "種子が茎に接触していない。",
+          "type": "number",
+          "min": 0,
+          "max": 3,
+          "pointsPerUnit": 10
+        }
+      ]
+    },
+    {
+      "name": "岩起こし",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "調査フラグが下がっている。",
+          "type": "boolean",
+          "points": 20
+        },
+        {
+          "description": "岩が競技開始位置の状態のままである。",
+          "type": "boolean",
+          "points": 10,
+          "dependsOn": 0
+        }
+      ]
+    },
+    {
+      "name": "幸運な葉っぱ",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "キリギリスが葉っぱの生息地の中に完全に収まっている状態で 1 枚の葉っぱが完全に取り除かれており、巣に接触していない。",
+          "type": "boolean",
+          "points": 10
+        },
+        {
+          "description": "2 枚目の葉っぱが完全に取り除かれており、巣に接触しておらず、キリギリスが競技開始位置の状態のままである。",
+          "type": "boolean",
+          "points": 20,
+          "dependsOn": 0
+        }
+      ]
+    },
+    {
+      "name": "根を伸ばす",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "一部が伸びている。",
+          "type": "boolean",
+          "points": 10,
+          "exclusiveWith": 1
+        },
+        {
+          "description": "完全に伸びている。",
+          "type": "boolean",
+          "points": 20,
+          "exclusiveWith": 0
+        }
+      ]
+    },
+    {
+      "name": "ハキリアリの狂乱",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "ハキリアリが巣に接触しており、葉っぱが巣の中にある。",
+          "type": "number",
+          "min": 0,
+          "max": 4,
+          "pointsPerUnit": 10
+        }
+      ]
+    },
+    {
+      "name": "巨大な菌糸体",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "菌糸体が完全に伸びている",
+          "type": "boolean",
+          "points": 20
+        },
+        {
+          "description": "M07達成かつ相手がM05で 20 点獲得している。",
+          "type": "boolean",
+          "points": 10,
+          "dependsOn": 0
+        },
+        {
+          "description": "M05で 20 点獲得かつ相手がM07達成。",
+          "type": "boolean",
+          "points": 10,
+          "dependsOn": 0
+        }
+      ]
+    },
+    {
+      "name": "絡まったつる",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "つるがマットに接触している。",
+          "type": "boolean",
+          "points": 30
+        }
+      ]
+    },
+    {
+      "name": "研究プラットフォーム",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "研究プラットフォームが上がっている。",
+          "type": "boolean",
+          "points": 10
+        },
+        {
+          "description": "カメラトラップが設置されている。",
+          "type": "boolean",
+          "points": 10
+        },
+        {
+          "description": "種子が木に触れていない。",
+          "type": "boolean",
+          "points": 10
+        }
+      ]
+    },
+    {
+      "name": "壊れやすいマイクロハビタット",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "蜘蛛の生息地が競技開始位置の状態のままである。",
+          "type": "boolean",
+          "points": 10
+        },
+        {
+          "description": "カタツムリの生息地が競技開始位置の状態のままである。",
+          "type": "boolean",
+          "points": 10
+        }
+      ]
+    },
+    {
+      "name": "過去への窓",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "根のカバーが下がり、マットに接触している",
+          "type": "boolean",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "name": "森の老木",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "支柱が完全に上がっており、木に接触している。",
+          "type": "boolean",
+          "points": 20
+        },
+        {
+          "description": "サポートタイが柱にかかっている。",
+          "type": "boolean",
+          "points": 10
+        }
+      ]
+    },
+    {
+      "name": "キーストーン種",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "キーストーン種が修復プラットフォーム上にあり、幼木が上がっている。",
+          "type": "boolean",
+          "points": 30
+        }
+      ]
+    },
+    {
+      "name": "再生の種",
+      "hasPenalty": false,
+      "criteria": [
+        {
+          "description": "種子が再生ステーションに収まっている。",
+          "type": "number",
+          "min": 0,
+          "max": 3,
+          "pointsPerUnit": 5
+        },
+        {
+          "description": "かつ、マットに接触している。",
+          "type": "number",
+          "min": 0,
+          "max": 3,
+          "pointsPerUnit": 5,
+          "dependsOn": 0
+        }
+      ]
+    },
+    {
+      "name": "生命中心型建築",
+      "hasPenalty": true,
+      "criteria": [
+        {
+          "description": "巣のあるひさしが上がっている。",
+          "type": "boolean",
+          "points": 10
+        },
+        {
+          "description": "鉱山ドックに設置されている。",
+          "type": "boolean",
+          "points": 10,
+          "dependsOn": 0,
+          "exclusiveWith": [3,5]
+        },
+        {
+          "description": "庭の天窓が完全にインしている。",
+          "type": "boolean",
+          "points": 10
+        },
+        {
+          "description": "都市ドックに設置されている。",
+          "type": "boolean",
+          "points": 10,
+          "dependsOn": 2,
+          "exclusiveWith": [1,5]
+        },
+        {
+          "description": "コンポストハッチが完全に開いており、マットに接触している。",
+          "type": "boolean",
+          "points": 10
+        },
+        {
+          "description": "農園ドックに設置されている。",
+          "type": "boolean",
+          "points": 10,
+          "dependsOn": 4,
+          "exclusiveWith": [1,3]
+        }
+      ]
+    }
+  ],
+  "precisionTokens": {
+    "description": "競技終了時に残っている精密トークンの数:",
+    "min": 0,
+    "max": 6,
+    "pointsTable": {
+      "6": 50,
+      "5": 50,
+      "4": 35,
+      "3": 25,
+      "2": 15,
+      "1": 10,
+      "0": 0
+    }
+  },
+  "graciousProfessionalism": {
+    "description": "ロボットゲームで示されたGracious Professionalism®",
+    "options": [
+      {
+        "label": "改善の余地がある",
+        "points": 2
+      },
+      {
+        "label": "達成している",
+        "points": 3
+      },
+      {
+        "label": "非常に優れている",
+        "points": 4
+      }
+    ]
+  }
+}
+

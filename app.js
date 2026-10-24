@@ -322,7 +322,10 @@ function initializeApp() {
         
         renderGraciousProfessionalism();
         console.log('Gracious Professionalismをレンダリング完了');
-        
+
+        // 左右カラムの高さが揃うようにミッションを振り分け直す
+        balanceMissionColumns();
+
         // 依存関係を初期化（少し遅延させて確実にDOMに追加された後に実行）
         setTimeout(() => {
             initializeDependencies();
@@ -398,6 +401,83 @@ function moveFixedSectionsToBottom() {
     // レイアウト変更後に自動スケーリングを適用（少し遅延）
     setTimeout(() => autoScaleContent(), 100);
 }
+
+// 左右カラムの高さが最も揃う位置でミッションを振り分ける（問題数の偏りでA4からはみ出すのを防ぐ）
+function balanceMissionColumns() {
+    const leftContainer = document.getElementById('missions-left');
+    const rightContainer = document.getElementById('missions-right');
+    if (!leftContainer || !rightContainer || !rulesData || !rulesData.missions) return;
+
+    // ミッションを番号順に取得
+    const sections = rulesData.missions
+        .map((mission, index) => document.getElementById(`mission-${index + 1}`))
+        .filter(section => section);
+    if (sections.length === 0) return;
+
+    const columnGap = parseFloat(getComputedStyle(leftContainer).rowGap) || 0;
+    const heightOf = (el) => el ? el.offsetHeight + columnGap : 0;
+
+    // 各カラムの固定部分の高さ（左：装備の点検、右：精密トークン・GP・採点結果）
+    const leftBase = heightOf(document.getElementById('equipment-inspection'));
+    const rightBase = heightOf(document.getElementById('precision-tokens')) +
+        heightOf(document.getElementById('gracious-professionalism')) +
+        heightOf(rightContainer.querySelector('.score-result'));
+
+    const heights = sections.map(heightOf);
+    const totalHeight = heights.reduce((sum, h) => sum + h, 0);
+
+    // 高い方のカラムが最も低くなる分割位置を探す
+    let bestSplit = 0;
+    let bestMaxHeight = Infinity;
+    let leftHeight = leftBase;
+    for (let split = 0; split <= sections.length; split++) {
+        if (split > 0) leftHeight += heights[split - 1];
+        const rightHeight = rightBase + (totalHeight - (leftHeight - leftBase));
+        const maxHeight = Math.max(leftHeight, rightHeight);
+        if (maxHeight < bestMaxHeight) {
+            bestMaxHeight = maxHeight;
+            bestSplit = split;
+        }
+    }
+
+    // 振り分け直す（右カラムはスペーサー・固定セクションの前に挿入）
+    const rightAnchor = rightContainer.querySelector('.fixed-sections-spacer, .fixed-section, .score-result');
+    sections.forEach((section, index) => {
+        if (index < bestSplit) {
+            leftContainer.appendChild(section);
+        } else {
+            rightContainer.insertBefore(section, rightAnchor);
+        }
+    });
+    console.log(`カラム振り分け: 左 ミッション1-${bestSplit}、右 ミッション${bestSplit + 1}-${sections.length}`);
+}
+
+// 印刷直前に内容の高さを測り、A4横1枚に収まる縮小率を設定する
+function updatePrintZoom() {
+    const container = document.querySelector('.container');
+    if (!container) return;
+
+    const A4_LANDSCAPE_HEIGHT = 793; // 210mm at 96dpi（端数切り捨て）
+    const SAFETY_MARGIN = 10;        // ブラウザ差・丸め誤差用の余裕
+    const PRINT_PADDING_DIFF = 8;    // 印刷時の.containerのpadding増加分（4px→8px、上下）
+    const DEFAULT_ZOOM = 0.95;
+
+    // min-heightの影響を除いた内容の高さを測る
+    const originalMinHeight = container.style.minHeight;
+    container.style.minHeight = '0';
+    const contentHeight = container.offsetHeight + PRINT_PADDING_DIFF;
+    container.style.minHeight = originalMinHeight;
+
+    const zoom = Math.min(DEFAULT_ZOOM, (A4_LANDSCAPE_HEIGHT - SAFETY_MARGIN) / contentHeight);
+    document.documentElement.style.setProperty('--print-zoom', zoom.toFixed(3));
+    console.log(`印刷用縮小率: ${zoom.toFixed(3)}（内容の高さ: ${contentHeight}px）`);
+}
+
+window.addEventListener('beforeprint', () => {
+    // フォント読み込み後の高さで振り分け直してから縮小率を計算
+    balanceMissionColumns();
+    updatePrintZoom();
+});
 
 // 固定セクションを右カラムに挿入
 function insertFixedSections() {
@@ -506,7 +586,7 @@ function renderMissions() {
     
     console.log('ミッションをレンダリング中...', rulesData.missions.length, '個のミッション');
     
-    // ミッションを左右に分ける（左：1-8、右：9-15）
+    // ミッションを左右に分ける（仮配置。描画後にbalanceMissionColumns()で高さに応じて振り分け直す）
     const splitPoint = Math.ceil(rulesData.missions.length / 2);
     
     rulesData.missions.forEach((mission, index) => {
@@ -532,14 +612,24 @@ function renderMissions() {
             const criterionDiv = document.createElement('div');
             criterionDiv.className = 'criterion';
             
+            // 依存関係・排他関係がある場合は、ミッションと基準のインデックスを設定
+            if (criterion.dependsOn !== undefined || criterion.exclusiveWith !== undefined) {
+                criterionDiv.dataset.missionIndex = index;
+                criterionDiv.dataset.criterionIndex = critIndex;
+            }
+
             // 依存関係がある場合は、データ属性を設定
             if (criterion.dependsOn !== undefined) {
                 console.log(`依存関係を設定: ミッション${index + 1}の基準${critIndex}は基準${criterion.dependsOn}に依存`);
                 criterionDiv.dataset.dependsOn = criterion.dependsOn;
-                criterionDiv.dataset.missionIndex = index;
-                criterionDiv.dataset.criterionIndex = critIndex;
                 // 初期状態で無効化スタイルを追加
                 criterionDiv.classList.add('criterion-disabled');
+            }
+
+            // 排他関係（OR条件）がある場合は、データ属性を設定（数値または配列で指定）
+            if (criterion.exclusiveWith !== undefined) {
+                console.log(`排他関係を設定: ミッション${index + 1}の基準${critIndex}は基準${criterion.exclusiveWith}と排他`);
+                criterionDiv.dataset.exclusiveWith = [].concat(criterion.exclusiveWith).join(',');
             }
             
             const label = document.createElement('div');
@@ -740,66 +830,65 @@ function handleInputChange(event) {
     calculateTotalScore();
 }
 
-// 依存関係を初期化
+// 依存関係・排他関係を初期化
 function initializeDependencies() {
     console.log('依存関係を初期化中...');
-    // すべての依存関係がある基準を確認
-    const dependentCriteria = document.querySelectorAll('[data-depends-on]');
-    console.log(`依存関係がある基準: ${dependentCriteria.length}個`);
-    
-    dependentCriteria.forEach(criterionDiv => {
-        const dependsOnIndex = parseInt(criterionDiv.dataset.dependsOn);
-        const missionIndex = parseInt(criterionDiv.dataset.missionIndex);
-        const criterionIndex = parseInt(criterionDiv.dataset.criterionIndex);
-        
-        console.log(`ミッション${missionIndex + 1}の基準${criterionIndex}は基準${dependsOnIndex}に依存`);
-        
-        // 依存元の基準を取得
-        const dependsOnRadioName = `mission-${missionIndex + 1}-criteria-${dependsOnIndex}`;
-        const dependsOnRadios = document.querySelectorAll(`input[name="${dependsOnRadioName}"]`);
-        
-        console.log(`依存元のラジオボタン（${dependsOnRadioName}）: ${dependsOnRadios.length}個`);
-        
-        if (dependsOnRadios.length === 0) {
-            console.error(`依存元のラジオボタンが見つかりません: ${dependsOnRadioName}`);
-            return;
-        }
-        
-        // 依存元のラジオボタンが変更されたときに、依存先を有効/無効化
-        dependsOnRadios.forEach(radio => {
-            radio.addEventListener('change', () => {
-                console.log(`依存元が変更されました: ${dependsOnRadioName}`);
-                updateDependentCriterion(criterionDiv, dependsOnRadioName);
-            });
-        });
-        
-        // 初期状態を設定
-        updateDependentCriterion(criterionDiv, dependsOnRadioName);
-    });
-    
+    // すべての依存関係・排他関係がある基準を確認
+    const relatedCriteria = document.querySelectorAll('[data-mission-index]');
+    console.log(`依存関係・排他関係がある基準: ${relatedCriteria.length}個`);
+
+    // 初期状態を設定（変更時はhandleInputChange → checkDependenciesで更新される）
+    relatedCriteria.forEach(criterionDiv => updateCriterionState(criterionDiv));
+
     console.log('依存関係の初期化完了');
 }
 
-// 依存先の基準を更新（有効/無効化）
-function updateDependentCriterion(criterionDiv, dependsOnRadioName) {
-    const dependsOnRadio = document.querySelector(`input[name="${dependsOnRadioName}"]:checked`);
-    const isParentYes = dependsOnRadio && dependsOnRadio.value !== '0';
-    
-    console.log(`依存関係チェック: ${dependsOnRadioName}, 親が「はい」: ${isParentYes}`);
-    
-    // 依存先の入力要素を取得
+// 指定した基準を獲得しているか（ラジオボタンは「はい」、数値入力は1以上）
+function isCriterionEarned(missionIndex, criterionIndex) {
+    const name = `mission-${missionIndex + 1}-criteria-${criterionIndex}`;
+    const numberInput = document.querySelector(`input[type="number"][name="${name}"]`);
+    if (numberInput) {
+        return !numberInput.disabled && (parseInt(numberInput.value) || 0) > 0;
+    }
+    const radio = document.querySelector(`input[name="${name}"]:checked`);
+    return !!radio && radio.value !== '0';
+}
+
+// 基準を更新（依存関係・排他関係による有効/無効化）
+function updateCriterionState(criterionDiv) {
+    const missionIndex = parseInt(criterionDiv.dataset.missionIndex);
+    let isEnabled = true;
+
+    // 依存関係：依存元が「はい」でない場合は無効
+    if (criterionDiv.dataset.dependsOn !== undefined) {
+        const dependsOnRadioName = `mission-${missionIndex + 1}-criteria-${criterionDiv.dataset.dependsOn}`;
+        const dependsOnRadio = document.querySelector(`input[name="${dependsOnRadioName}"]:checked`);
+        const isParentYes = dependsOnRadio && dependsOnRadio.value !== '0';
+        console.log(`依存関係チェック: ${dependsOnRadioName}, 親が「はい」: ${isParentYes}`);
+        if (!isParentYes) isEnabled = false;
+    }
+
+    // 排他関係（OR条件）：指定した基準を獲得している場合は無効
+    if (criterionDiv.dataset.exclusiveWith !== undefined) {
+        criterionDiv.dataset.exclusiveWith.split(',').forEach(exclusiveIndex => {
+            if (isCriterionEarned(missionIndex, parseInt(exclusiveIndex))) {
+                console.log(`排他関係チェック: ミッション${missionIndex + 1}の基準${exclusiveIndex}を獲得済み`);
+                isEnabled = false;
+            }
+        });
+    }
+
+    // 対象の入力要素を取得
     const inputs = criterionDiv.querySelectorAll('input');
-    
-    console.log(`依存先の入力要素数: ${inputs.length}`);
-    
+
     inputs.forEach(input => {
-        if (isParentYes) {
-            // 親が「はい」の場合、有効化
+        if (isEnabled) {
+            // 親が「はい」かつ排他の基準が未獲得の場合、有効化
             console.log(`有効化: ${input.name || input.id}`);
             input.disabled = false;
             criterionDiv.classList.remove('criterion-disabled');
         } else {
-            // 親が「いいえ」または未選択の場合、無効化
+            // 親が「いいえ」・未選択、または排他の基準を獲得済みの場合、無効化
             console.log(`無効化: ${input.name || input.id}`);
             input.disabled = true;
             criterionDiv.classList.add('criterion-disabled');
@@ -825,13 +914,12 @@ function checkDependencies(element) {
     if (!missionMatch) return;
     
     const missionIndex = parseInt(missionMatch[1]) - 1;
-    const criterionIndex = parseInt(missionMatch[2]);
-    
-    // この基準に依存している基準を探す
-    const dependentCriteria = document.querySelectorAll(`[data-mission-index="${missionIndex}"][data-depends-on="${criterionIndex}"]`);
-    
-    dependentCriteria.forEach(criterionDiv => {
-        updateDependentCriterion(criterionDiv, element.name);
+
+    // 同じミッション内の依存関係・排他関係がある基準を更新
+    const relatedCriteria = document.querySelectorAll(`[data-mission-index="${missionIndex}"]`);
+
+    relatedCriteria.forEach(criterionDiv => {
+        updateCriterionState(criterionDiv);
     });
 }
 
